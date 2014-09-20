@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Luis on 11/09/2014.
  */
-public abstract class Stats {
+public class Stats {
 
 	public static final int WS = 0;
 	public static final int BS = 1;
@@ -24,18 +24,24 @@ public abstract class Stats {
     public static final int STR = 13;
     public static final int APW = 14;
 
+    public static final int M = 15;
+
     public CCWeapon ccw;
     public RangedWeapon rw;
 
-    private int[] baseStats = new int[15];
-    private int[] stats = new int[15];
+    public String ID = "";
+
+    private int[] baseStats = new int[16];
+    private int[] stats = new int[16];
     private int cost;
 
     public Stats() {
     }
 
     public Stats(int[] s, CCWeapon cc, RangedWeapon r) {
-        stats = baseStats = s;
+
+        baseStats = s;
+        stats = baseStats.clone();
         ccw = cc;
         rw = r;
         ccw.updateStats(this);
@@ -43,19 +49,22 @@ public abstract class Stats {
 
     }
 
-    public double shooting(Stats s) {
+    public double shooting(Stats s, int distance) {
         double wounds = 0;
         for (int i = 1; i < get(Stats.SHOTS); i++) {
-            wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
+            if (distance <= get(RANGE))
+                wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
         }
         return wounds;
     }
 
-    public double combat(Stats s) {
+    public double combat(Stats s, int init) {
         double wounds = 0;
-        for (int i = 1; i <= get(A); i++) {
-            wounds += hit(s, i) * wound(s, i) * save(s, i);
-            //if (get(S) >= s.get(T) && s.get(W) > 1) //TODO: instant death
+        if (init == get(I)) {
+            for (int i = 1; i <= get(A); i++) {
+                wounds += hit(s, i) * wound(s, i) * save(s, i);
+                //if (get(S) >= s.get(T) && s.get(W) > 1) //TODO: instant death
+            }
         }
         return wounds;
     }
@@ -133,7 +142,7 @@ public abstract class Stats {
     }
 
     public void setAll(Stats s) {
-        stats = s.stats;
+        stats = s.stats.clone();
     }
     
     public void set(int s, int c) {
@@ -159,6 +168,10 @@ public abstract class Stats {
 
     public void setCost(int c) {
         cost = c;
+    }
+
+    public String getID() {
+        return ID;
     }
 
 }

@@ -11,7 +11,9 @@ public class CCWeapon {
 
     public CCWeapon(int WP, boolean MC, boolean DW) {
         ID = Math.min(4, WP);
-
+        spr = new SpecialRules();
+        spr.rerollOneHit = MC;
+        spr.rerollOneWound = DW;
     }
 
     public void updateStats(Stats stats) {
@@ -59,20 +61,31 @@ public class CCWeapon {
             res += "Master-crafted ";
 
         switch (ID) {
-            case 0:
-                res += "Sword ";
-            case 1:
-                res += "Halberd ";
-            case 2:
-                res += "Falchions ";
-            case 3:
-                res += "Stave ";
-            case 4:
-                res += "Hammer ";
-            default: return "Invalid weapon";
+            case 0: {
+                res += "Sword, ";
+                break;
+            }
+            case 1: {
+                res += "Halberd, ";
+                break;
+            }
+            case 2: {
+                res += "Falchions, ";
+                break;
+            }
+            case 3: {
+                res += "Stave, ";
+                break;
+            }
+            case 4: {
+                res += "Hammer, ";
+                break;
+            }
+            default:
+                res += "Invalid weapon ";
         }
 
-
+        return res;
     }
 
     public String getID() {

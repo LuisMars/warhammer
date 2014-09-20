@@ -14,6 +14,9 @@ public class RangedWeapon {
 
     public RangedWeapon(int id, boolean MC, boolean DW) {
         ID = id;
+        spr = new SpecialRules();
+        spr.rerollOneHit = MC;
+        spr.rerollOneWound = DW;
     }
 
     public void updateStats(Stats stats) {
@@ -63,7 +66,7 @@ public class RangedWeapon {
             res += "Master-crafted ";
         switch (ID) {
             case 0: {
-                res += "Assault bolter ";
+                res += "Assault Bolter ";
                 break;
             }
             case 1: {

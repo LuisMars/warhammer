@@ -14,9 +14,13 @@ public class Main {
         Results r = new Results(ID, b.totalcost, c.assault(), c.normal(), c.lost);
         System.out.println(r);
         */
+        TerminatorSquad t = new TerminatorSquad(1073741824); //1894937184 //TODO:redo generated files
+        System.out.println(t);
+        System.out.println(t.getID());
+        System.out.println(t.getID2());
         //stuff();
         //combat();
-        //top20("vsStdTerm.cc");
+        //top20("results.dat");
 
 
     }
@@ -39,10 +43,9 @@ public class Main {
                 int ID = ois.readInt();
                 int cost = ois.readInt();
                 double assault = ois.readDouble();
-                double normal = ois.readDouble();
                 double lost = ois.readDouble();
                 //boolean hamerhand = ois.readBoolean();
-                results.add(new Results(ID, cost, assault, normal, lost));
+                results.add(new Results(ID, cost, assault, lost));
 
             }
 
@@ -56,23 +59,15 @@ public class Main {
         System.out.println("Writing...");
 
 
-        try {
-            PrintWriter pw = new PrintWriter("results.txt");
+        int n = 0;
+        for (int i = results.size() - 1; i > 0 && n < 20; i--) {
 
-            int n = 0;
-            for (int i = results.size() - 1; i > 0 && n < 20; i--) {
+            TerminatorSquad t = new TerminatorSquad(results.get(i).ID);
+            System.out.println(results.get(i));
+            n++;
 
-                TermSquad t = new TermSquad(results.get(i).ID);
-                if (t.size == 5 && t.specialA.rw.ID != 0 /*&& t.specialB.rw.ID != 0*/) {
-                    System.out.println(results.get(i));
-                    n++;
-                }
-            }
-            pw.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
+
     }
 
     public static void combat() {
@@ -83,8 +78,8 @@ public class Main {
 
         try {
             System.out.println("Reading data...");
-            //FileOutputStream fos = new FileOutputStream("results2.dat");
-            //ObjectOutputStream oos = new ObjectOutputStream(fos);
+            FileOutputStream fos = new FileOutputStream("results.dat");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 
             FileInputStream fis = new FileInputStream("squad.dat");
@@ -96,35 +91,22 @@ public class Main {
 
             while(true) {
                 p++;
-/*
-                TermSquad t = new TermSquad(Long.toBinaryString(ois.readLong()));
 
-                if(t.size == 10) n++;
+                TerminatorSquad t = new TerminatorSquad(ois.readInt());
 
-
-
-                if(list.add(t.getID()))
-                    oos.writeInt(t.getID());
-*/
-                int i = ois.readInt();
-                list2.add(i);
-                //System.out.println(i + " " + Integer.toBinaryString(i));
-
-                /*
                 Combat c = new Combat(t);
 
-                oos.writeLong(t.getID());
-                oos.writeInt(t.totalcost);
-                oos.writeDouble(c.assault());
-                oos.writeDouble(c.normal());
-                oos.writeDouble(c.lost);
+                oos.writeInt(t.getID());
+                oos.writeInt(t.getCost());
+                oos.writeDouble(c.a.wounds);
+                oos.writeDouble(c.a.lost);
                 //oos.writeBoolean(false);
-                */
+
             }
 
 
         } catch (IOException e) {
-            System.out.println("End of file " + n + " + " + (p - n) + " = " + p);
+            System.out.println("End of file");
         }
         System.out.println(list2.get(Integer.parseInt("111001001110010011",2)));
 
@@ -151,7 +133,7 @@ public class Main {
         }
         double total = 480;
         for (int i = min; i <= max; i++) {
-            TermSquad ts = new TermSquad(i);
+            TerminatorSquad ts = new TerminatorSquad(i);
             int s = ts.getID();
             if(i%500000 == 0) {
                 double se = (System.currentTimeMillis()-t)/1000;

@@ -7,16 +7,15 @@ public class Results implements Comparable<Results> {
     int ID;
     int COST;
     double ASSAULT;
-    double NORMAL;
     double LOST;
     double EF;
-    public Results(int id, int cost, double assault, double normal, double lost) {
+
+    public Results(int id, int cost, double assault, double lost) {
         ID = id;
         COST = cost;
         ASSAULT = assault;
-        NORMAL = normal;
         LOST = lost;
-        EF = (NORMAL*280)/(LOST * COST);
+        EF = (ASSAULT) / (LOST * COST);
     }
 
     public int compareTo(Results R) {
@@ -25,11 +24,10 @@ public class Results implements Comparable<Results> {
 
     @Override
     public String toString() {
-        TermSquad t = new TermSquad(ID);
+        TerminatorSquad t = new TerminatorSquad(ID);
         return "ID: " + ID +
                 "\nEfficiency: " + EF +
-                "\nWounds: " + NORMAL +
-                "\nAssaulting: " + ASSAULT +
+                "\nWounds: " + ASSAULT +
                 "\nWounds lost: " + LOST + "\n\n" +
                 t + "\n-----------------------------------------------\n";
     }
