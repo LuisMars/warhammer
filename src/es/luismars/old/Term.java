@@ -1,15 +1,10 @@
-package es.luismars;
+
 /**
  * Created by Luis on 09/09/2014.
  */
-public class Term extends Rules{
 
-
-    public Stats stats;
-    public CCWeapon ccw;
-    public RangedWeapon rw = new RangedWeapon();
-
-    public Term() {}
+/*
+public class Term extends Stats{
 
     public Term(String ID) {
         if(ID.length() == 3) {
@@ -90,3 +85,4 @@ public class Term extends Rules{
     }
 
 }
+*/

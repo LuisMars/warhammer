@@ -1,7 +1,8 @@
-package es.luismars;
+package es.luismars.old;
 /**
  * Created by Luis on 09/09/2014.
  */
+/*
 public class TermJust extends Term {
 
     int masterCr;
@@ -46,7 +47,7 @@ public class TermJust extends Term {
         if(masterCr == 1)
             res += "Master-crafted ";
         res += ccw;
-        if (masterCr >= 2)
+        if (masterCr == 2)
             res += " and Master-crafted Assault bolter";
 
         if(digitalW || meltaBombs || tpHomer) {
@@ -134,3 +135,4 @@ public class TermJust extends Term {
         return wounds;
     }
 }
+*/

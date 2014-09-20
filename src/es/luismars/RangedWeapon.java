@@ -5,51 +5,85 @@ package es.luismars;
 public class RangedWeapon {
 
     int ID;
-    int shots;
-    int range;
-    int S;
-    int AP;
-
+    int cost;
+    SpecialRules spr;
 
     public RangedWeapon () {
         ID = 0;
     }
 
-    public RangedWeapon (int id) {
+    public RangedWeapon(int id, boolean MC, boolean DW) {
         ID = id;
     }
 
-    public void updateStats() {
+    public void updateStats(Stats stats) {
         switch (ID) {
             case 0: {
-                shots = 2;
-                range = 24;
-                S = 4;
-                AP = 4;
+                stats.set(Stats.SHOTS, 2);
+                stats.set(Stats.RANGE, 24);
+                stats.set(Stats.STR, 4);
+                stats.set(Stats.APW, 4);
+                cost = 0;
                 break;
             }
             case 1: {
-                shots = 6;
-                range = 6;
-                S = 6;
-                AP = 4;
+                stats.set(Stats.SHOTS, 4); //TODO: do this better
+                stats.set(Stats.RANGE, 6);
+                stats.set(Stats.STR, 6);
+                stats.set(Stats.APW, 4);
+                cost = 5;
                 break;
             }
             case 2: {
-                shots = 6;
-                range = 24;
-                S = 4;
-                AP = 7;
+                stats.set(Stats.SHOTS, 6);
+                stats.set(Stats.RANGE, 24);
+                stats.set(Stats.STR, 4);
+                stats.set(Stats.APW, 7);
+                cost = 10;
                 break;
             }
             case 3: {
-                shots = 2;
-                range = 24;
-                S = 7;
-                AP = 4;
+                stats.set(Stats.SHOTS, 4);
+                stats.set(Stats.RANGE, 24);
+                stats.set(Stats.STR, 7);
+                stats.set(Stats.APW, 4);
+                cost = 15;
                 break;
             }
         }
     }
 
+    public int getCost() {
+        return cost;
+    }
+
+    public String toString() {
+        String res = "";
+        if (spr.rerollOneHit)
+            res += "Master-crafted ";
+        switch (ID) {
+            case 0: {
+                res += "Assault bolter ";
+                break;
+            }
+            case 1: {
+                res += "Incinerator ";
+                break;
+            }
+            case 2: {
+                res += "Psilencer ";
+                break;
+            }
+            case 3: {
+                res += "Psycannon ";
+                break;
+            }
+        }
+
+        return res;
+    }
+
+    public String getID() {
+        return Utils.toBinStr(ID, 2);
+    }
 }

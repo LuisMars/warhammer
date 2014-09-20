@@ -1,7 +1,9 @@
-package es.luismars;
+package es.luismars.old;
 /**
  * Created by Luis on 09/09/2014.
  */
+
+/*
 public class TermSpec extends Term {
     RangedWeapon rw;
     int SpecWeapon;
@@ -54,3 +56,4 @@ public class TermSpec extends Term {
         return cost;
     }
 }
+*/

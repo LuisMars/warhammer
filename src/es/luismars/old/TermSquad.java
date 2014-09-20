@@ -1,7 +1,9 @@
-package es.luismars;
+package es.luismars.old;
 /**
  * Created by Luis on 09/09/2014.
  */
+
+/*
 public class TermSquad {
     int ID;
     int size;
@@ -164,3 +166,4 @@ public class TermSquad {
         set();
     }
 }
+*/
