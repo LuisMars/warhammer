@@ -7,17 +7,17 @@ import java.util.List;
  */
 public class Stats {
 
-	public static final int WS = 0;
-	public static final int BS = 1;
-	public static final int S = 2;
-	public static final int T = 3;
-	public static final int W = 4;
-	public static final int I = 5;
-	public static final int A = 6;
-	public static final int L = 7;
-	public static final int AS = 8;
-	public static final int SS = 9;
-	public static final int AP = 10;
+    public static final int WS = 0;
+    public static final int BS = 1;
+    public static final int S = 2;
+    public static final int T = 3;
+    public static final int W = 4;
+    public static final int I = 5;
+    public static final int A = 6;
+    public static final int L = 7;
+    public static final int AS = 8;
+    public static final int SS = 9;
+    public static final int AP = 10;
 
     public static final int SHOTS = 11;
     public static final int RANGE = 12;
@@ -52,8 +52,12 @@ public class Stats {
     public double shooting(Stats s, int distance) {
         double wounds = 0;
         for (int i = 1; i < get(Stats.SHOTS); i++) {
-            if (distance <= get(RANGE))
-                wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
+            if (distance <= get(RANGE)) {
+                if (rw.spr.rending)
+                    wounds += shoot(s, i) * ((woundShooting(s, i) - 1 / 6.0) * saveShooting(s, i) + 1 / 6.0);
+                else
+                    wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
+            }
         }
         return wounds;
     }
@@ -144,9 +148,9 @@ public class Stats {
     public void setAll(Stats s) {
         stats = s.stats.clone();
     }
-    
+
     public void set(int s, int c) {
-    	stats[s] = c;
+        stats[s] = c;
     }
 
     public void add(int s, int c) {
@@ -157,9 +161,13 @@ public class Stats {
         stats[s] *= c;
         stats[s] = Math.min(stats[s], 10);
     }
-    
+
     public int get(int s) {
-    	return stats[s];
+        return stats[s];
+    }
+
+    public int getBase(int s) {
+        return baseStats[s];
     }
 
     public int getCost() {

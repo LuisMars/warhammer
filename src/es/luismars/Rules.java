@@ -88,4 +88,19 @@ public class Rules {
     public static double reroll1ofN(double p, int n) {
         return p + Math.pow(p, n) * (1 - p);
     }
+
+    public static double rending(int att, int def, int AS) {
+        return (woundRoll(att, def) - 1 / 6.0) * armorSave(AS) + (1 / 6.0);
+    }
+
+    public static double retreatCC(double wDif, int L) {
+        if (wDif > 0)
+            return (1 - passTest(L - (int) (wDif + 1)));
+        else
+            return 0;
+    }
+
+    public static double sweepingAdvance(int iA, int iD) {
+        return Math.min(Math.max(1 - ((6 - ((iA + 3) - iD)) / 6.0), 0), 1);
+    }
 }

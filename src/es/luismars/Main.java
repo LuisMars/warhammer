@@ -6,21 +6,18 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-/*
-        Long ID = 3569648784l;*/
-        //TermSquad b = new TermSquad("1101001011000010010000100100100");
-        //System.out.println(" fdfdfd  ");
-        /*Combat c = new Combat(b);
-        Results r = new Results(ID, b.totalcost, c.assault(), c.normal(), c.lost);
-        System.out.println(r);
-        */
-        TerminatorSquad t = new TerminatorSquad(1073741824); //1894937184 //TODO:redo generated files
-        System.out.println(t);
-        System.out.println(t.getID());
-        System.out.println(t.getID2());
+
+
+        TerminatorSquad t = new TerminatorSquad(60265363);
+        Combat c = new Combat(t);
+        c.assault();
+        System.out.println(c);
+
         //stuff();
-        //combat();
-        //top20("results.dat");
+        //combat("new_no_dups.dat","testcombat.dat");
+        //top20("testcombat.dat");
+
+        //generate("new_no_dups.dat");
 
 
     }
@@ -70,7 +67,7 @@ public class Main {
 
     }
 
-    public static void combat() {
+    public static void combat(String in, String out) {
         int p = 0;
         int n = 0;
         Set list = new HashSet();
@@ -78,15 +75,13 @@ public class Main {
 
         try {
             System.out.println("Reading data...");
-            FileOutputStream fos = new FileOutputStream("results.dat");
+            FileOutputStream fos = new FileOutputStream(out);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 
-            FileInputStream fis = new FileInputStream("squad.dat");
+            FileInputStream fis = new FileInputStream(in);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
-
-            System.out.println("Writing data...");
 
 
             while(true) {
@@ -112,136 +107,29 @@ public class Main {
 
     }
 
-    public static void stuff() {
-
-        //Test window = new Test();
-
-        int max = 62914560;
-        int min = 131072;
-
-        System.out.println(max + " " + min);
-
-        Set list = new HashSet();
-
-        long t = System.currentTimeMillis();
-
-        ObjectOutputStream oos = null;
+    public static void generate(String file) {
+        // min5: 131072, max5: 169875, min10:50331648 , max10:60265363
         try {
-            oos = new ObjectOutputStream(new FileOutputStream("squad.dat"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        double total = 480;
-        for (int i = min; i <= max; i++) {
-            TerminatorSquad ts = new TerminatorSquad(i);
-            int s = ts.getID();
-            if(i%500000 == 0) {
-                double se = (System.currentTimeMillis()-t)/1000;
-                double done = (i-min)/1000000;
-                double perc = done/total;
-                double totalTime = (1.0/perc) * se;
-                int sec = (int)(totalTime-se);
-                System.out.println((int)(perc*10000)/100 + "% Done     Remaining:" + sec/3600 + "h " + (sec%3600)/60 + "m "  + sec%60 + "s");
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+            Set list = new HashSet();
 
-            }
-            if(list.add(s)) {
-                try {
-                    //System.out.print(ts);
-                    oos.writeInt(s);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            for (int i = 131072; i <= 169875; i++) {
+                TerminatorSquad t = new TerminatorSquad(i);
+                if (list.add(t.getID2()))
+                    oos.writeInt(t.getID2());
             }
 
-        }
-
-
-
-        try {
+            for (int i = 50331648; i <= 60265363; i++) {
+                TerminatorSquad t = new TerminatorSquad(i);
+                if (list.add(t.getID2()))
+                    oos.writeInt(t.getID2());
+            }
             oos.close();
+            System.out.println(list.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-        /*
-        double t = System.currentTimeMillis();
-        ObjectInputStream ois;
-        List<Long> readlist = new ArrayList<Long>();
-        try {
-
-            FileInputStream fis = new FileInputStream("terminators.dat");
-            ois = new ObjectInputStream(fis);
-
-
-            while(true) {
-                readlist.add(ois.readLong());
-            }
-
-
-
-        }
-        catch (EOFException e) {
-            //System.out.println(readlist.size());
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(System.currentTimeMillis()-t);
-        t = System.currentTimeMillis();
-
-        FileOutputStream f;
-
-        try {
-            f = new FileOutputStream("termilist.long");
-            oos = new ObjectOutputStream(f);
-
-            oos.writeObject(readlist);
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        //ObjectInputStream ois;
-        //List<Long> readlist = new ArrayList<Long>();
-
-        /*
-        try {
-
-            FileInputStream fis = new FileInputStream("termilist.long");
-            ois = new ObjectInputStream(fis);
-
-
-            readlist = (List<Long>)ois.readObject();
-
-        }
-        catch (EOFException e) {
-            System.out.println(readlist.size());
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(System.currentTimeMillis()-t);
-        readlist.get(15560);*/
-
-
-
-
-/*
-        TermSquad test = new TermSquad("1110011100100111001110011100");
-        System.out.println(test);
-*/
-
-
-        /*
-        test = new TermSquad(Long.toBinaryString(readlist.get(6550166)));
-        System.out.println(test);
-        test = new TermSquad(Long.toBinaryString(readlist.get(5175560)));
-        System.out.println(test);
-        */
     }
 }
