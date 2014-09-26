@@ -6,16 +6,27 @@ public class Results implements Comparable<Results> {
 
     int ID;
     int COST;
-    double ASSAULT;
+    double WOUNDS;
     double LOST;
+    int TURN;
+    double CATCHING;
+    double RETREAT;
+
     double EF;
 
-    public Results(int id, int cost, double assault, double lost) {
+    //TODO: add cost of the other unit
+    public Results(int id, int cost, double wounds, double lost, int turn, double catching, double retreat) {
         ID = id;
         COST = cost;
-        ASSAULT = assault;
+        WOUNDS = wounds;
         LOST = lost;
-        EF = (ASSAULT) / (LOST * COST);
+        TURN = turn;
+        CATCHING = catching;
+        RETREAT = retreat;
+        if (WOUNDS - LOST > 0.0)
+            EF = (WOUNDS * 440) / (LOST * COST * TURN);
+        else
+            EF = 0;
     }
 
     public int compareTo(Results R) {
@@ -26,8 +37,11 @@ public class Results implements Comparable<Results> {
     public String toString() {
         TerminatorSquad t = new TerminatorSquad(ID);
         return "ID: " + ID +
+                "\nLast turn: " + TURN +
+                "\nCatching: " + CATCHING +
+                "\nRetreating: " + RETREAT +
                 "\nEfficiency: " + EF +
-                "\nWounds: " + ASSAULT +
+                "\nWounds: " + WOUNDS +
                 "\nWounds lost: " + LOST + "\n\n" +
                 t + "\n-----------------------------------------------\n";
     }

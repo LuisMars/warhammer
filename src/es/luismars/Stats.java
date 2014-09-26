@@ -51,10 +51,10 @@ public class Stats {
 
     public double shooting(Stats s, int distance) {
         double wounds = 0;
-        for (int i = 1; i < get(Stats.SHOTS); i++) {
+        for (int i = 1; i <= get(Stats.SHOTS); i++) {
             if (distance <= get(RANGE)) {
                 if (rw.spr.rending)
-                    wounds += shoot(s, i) * ((woundShooting(s, i) - 1 / 6.0) * saveShooting(s, i) + 1 / 6.0);
+                    wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
                 else
                     wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
             }
@@ -69,7 +69,9 @@ public class Stats {
                 wounds += hit(s, i) * wound(s, i) * save(s, i);
                 //if (get(S) >= s.get(T) && s.get(W) > 1) //TODO: instant death
             }
+
         }
+
         return wounds;
     }
 
@@ -113,10 +115,8 @@ public class Stats {
 
         if (ccw.spr.rerollHit)
             hits = Rules.reroll(hits);
-
         else if (ccw.spr.rerollOneHit)
             hits = Rules.reroll1ofN(hits, i);
-
 
         return hits;
     }
@@ -176,6 +176,10 @@ public class Stats {
 
     public void setCost(int c) {
         cost = c;
+    }
+
+    public void addCost(int c) {
+        cost += c;
     }
 
     public String getID() {

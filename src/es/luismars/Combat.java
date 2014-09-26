@@ -14,11 +14,12 @@ public class Combat {
 
     public Combat(Squad s) {
         a = s;
-        d = new TerminatorSquad(0);
+        d = new TerminatorSquad(59281552);
     }
 
     public void assault() {
         //TODO: better sweeping advances
+/*
         while (distance > 0) {
 
             turn++;
@@ -27,15 +28,18 @@ public class Combat {
             distance -= a.squad[0].get(Stats.M);
             if (distance < 0) break;
             //shoot deffensive
+            turn++
             d.wounds += shooting(d, a) * d.remaining();
             a.lost = d.wounds;
             distance -= d.squad[0].get(Stats.M);
             addSummary("Shooting");
         }
-
-        while (turn <= 7 && a.canFight() && d.canFight()) {
-            combat(a, d);
-            combat(d, a);
+*/
+        while (turn <= 14 && a.canFight() && d.canFight()) {
+            if (turn % 2 == 1)
+                combat(a, d);
+            else
+                combat(d, a);
             addSummary("CC");
             turn++;
         }
@@ -46,7 +50,7 @@ public class Combat {
     public void addSummary(String fase) {
         summary += ("Turn: " + turn + " (" + fase + ")\nWounds: " + a.wounds + "\nLost: " + a.lost);
         summary += ("\nRemaining: " + a.remainingMinis() + "/" + d.remainingMinis());
-        summary += ("\nRetreat: " + a.retreat);
+        summary += ("\nRetreat: " + d.catching);
         summary += ("\nCatching: " + a.catching);
         summary += ("\n-----------------------------\n");
     }
@@ -63,30 +67,35 @@ public class Combat {
             double woundsDef = 0;
 
             for (Stats s : att.squad) {
-                woundsAtt = s.combat(def.squad[0], i) * att.remaining();
+                woundsAtt += s.combat(def.squad[0], i) * att.remaining();
             }
 
             for (Stats s : def.squad) {
-                woundsDef = s.combat(att.squad[0], i) * def.remaining();
+                woundsDef += s.combat(att.squad[0], i) * def.remaining();
             }
 
             woundsAttTot += woundsAtt;
+            att.wounds += woundsAtt;
+            def.lost += woundsAtt;
+
             woundsDefTot += woundsDef;
+            att.lost += woundsDef;
+            def.wounds += woundsDef;
 
         }
 
-        double catching = Rules.retreatCC((woundsAttTot - woundsDefTot), def.squad[0].get(Stats.L));
-        double retreat = Rules.retreatCC((woundsDefTot - woundsAttTot), att.squad[0].get(Stats.L));
+        att.combatResult(woundsAttTot, woundsDefTot, def.squad[0]);
+        def.combatResult(woundsDefTot, woundsAttTot, att.squad[0]);
 
-        att.catching = catching * Rules.sweepingAdvance(def.squad[0].getBase(Stats.I), att.squad[0].getBase(Stats.I));
-        att.retreat = retreat * Rules.sweepingAdvance(att.squad[0].getBase(Stats.I), def.squad[0].getBase(Stats.I));
-        ;
+        if (def.canCatch()) {
+            att.lost = att.size * att.squad[0].get(Stats.W);
+            def.wounds = att.lost;
+        }
+        if (att.canCatch()) {
+            def.lost = def.size * def.squad[0].get(Stats.W);
+            att.wounds = def.lost;
+        }
 
-        def.catching = att.retreat;
-        def.retreat = att.catching;
-
-        att.lost = def.wounds += woundsDefTot;
-        def.lost = att.wounds += woundsAttTot;
     }
 
     public double shooting(Squad att, Squad def) {

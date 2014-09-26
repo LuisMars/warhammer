@@ -6,12 +6,11 @@ public class CCWeapon {
 
     int ID;
     int cost = 0;
-    SpecialRules spr;
+    SpecialRules spr = new SpecialRules();
 
 
     public CCWeapon(int WP, boolean MC, boolean DW) {
         ID = Math.min(4, WP);
-        spr = new SpecialRules();
         spr.rerollOneHit = MC;
         spr.rerollOneWound = DW;
     }

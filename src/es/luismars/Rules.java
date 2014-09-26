@@ -94,8 +94,8 @@ public class Rules {
     }
 
     public static double retreatCC(double wDif, int L) {
-        if (wDif > 0)
-            return (1 - passTest(L - (int) (wDif + 1)));
+        if (wDif > -0.5)
+            return (1 - passTest(L - (int) (Math.ceil(wDif))));
         else
             return 0;
     }

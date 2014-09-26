@@ -7,15 +7,15 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 
-
-        TerminatorSquad t = new TerminatorSquad(60265363);
+/*
+        TerminatorSquad t = new TerminatorSquad(133136);
         Combat c = new Combat(t);
         c.assault();
-        System.out.println(c);
-
+        System.out.println(c  + "\n" + t);
+*/
         //stuff();
-        //combat("new_no_dups.dat","testcombat.dat");
-        //top20("testcombat.dat");
+        combat("new_no_dups.dat", "testcombat.dat");
+        top20("testcombat.dat");
 
         //generate("new_no_dups.dat");
 
@@ -34,15 +34,19 @@ public class Main {
             ObjectInputStream ois = new ObjectInputStream(fis);
 
 
-            System.out.println("Reading...");
+            System.out.println("Processing...");
             while(true) {
 
                 int ID = ois.readInt();
                 int cost = ois.readInt();
-                double assault = ois.readDouble();
+                double wounds = ois.readDouble();
                 double lost = ois.readDouble();
+                int turn = ois.readInt();
+                double catching = ois.readDouble();
+                double retreat = ois.readDouble();
                 //boolean hamerhand = ois.readBoolean();
-                results.add(new Results(ID, cost, assault, lost));
+
+                results.add(new Results(ID, cost, wounds, lost, turn, catching, retreat));
 
             }
 
@@ -51,27 +55,23 @@ public class Main {
             System.out.println("End of file");
 
         }
-        System.out.println("Sorting...");
+        System.out.println("Sorting...\n");
         Collections.sort(results);
-        System.out.println("Writing...");
 
 
         int n = 0;
-        for (int i = results.size() - 1; i > 0 && n < 20; i--) {
-
+        for (int i = results.size() - 1; i > 0 && n < 10; i--) {
             TerminatorSquad t = new TerminatorSquad(results.get(i).ID);
-            System.out.println(results.get(i));
-            n++;
+            if (true) {
+                System.out.println(results.get(i));
+                n++;
+            }
 
         }
 
     }
 
     public static void combat(String in, String out) {
-        int p = 0;
-        int n = 0;
-        Set list = new HashSet();
-        List<Integer> list2= new ArrayList<Integer>();
 
         try {
             System.out.println("Reading data...");
@@ -85,16 +85,17 @@ public class Main {
 
 
             while(true) {
-                p++;
-
                 TerminatorSquad t = new TerminatorSquad(ois.readInt());
 
                 Combat c = new Combat(t);
-
+                c.assault();
                 oos.writeInt(t.getID());
                 oos.writeInt(t.getCost());
                 oos.writeDouble(c.a.wounds);
                 oos.writeDouble(c.a.lost);
+                oos.writeInt(c.turn);
+                oos.writeDouble(c.a.catching);
+                oos.writeDouble(c.d.catching);
                 //oos.writeBoolean(false);
 
             }
@@ -103,7 +104,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("End of file");
         }
-        System.out.println(list2.get(Integer.parseInt("111001001110010011",2)));
 
     }
 
