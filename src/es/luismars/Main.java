@@ -7,19 +7,19 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 
-/*
-        TerminatorSquad t = new TerminatorSquad(133136);
+
+        InterceptorSquad t = new InterceptorSquad(58757264);
         Combat c = new Combat(t);
         c.assault();
         System.out.println(c  + "\n" + t);
-*/
+/*
         //stuff();
         combat("new_no_dups.dat", "testcombat.dat");
         top20("testcombat.dat");
 
         //generate("new_no_dups.dat");
 
-
+*/
     }
 
     public static void top20(String file) {
@@ -61,7 +61,7 @@ public class Main {
 
         int n = 0;
         for (int i = results.size() - 1; i > 0 && n < 10; i--) {
-            TerminatorSquad t = new TerminatorSquad(results.get(i).ID);
+            InterceptorSquad t = new InterceptorSquad(results.get(i).ID);
             if (true) {
                 System.out.println(results.get(i));
                 n++;
@@ -85,7 +85,7 @@ public class Main {
 
 
             while(true) {
-                TerminatorSquad t = new TerminatorSquad(ois.readInt());
+                InterceptorSquad t = new InterceptorSquad(ois.readInt());
 
                 Combat c = new Combat(t);
                 c.assault();
@@ -115,14 +115,14 @@ public class Main {
 
             for (int i = 131072; i <= 169875; i++) {
                 TerminatorSquad t = new TerminatorSquad(i);
-                if (list.add(t.getID2()))
-                    oos.writeInt(t.getID2());
+                if (list.add(t.getID()))
+                    oos.writeInt(t.getID());
             }
 
             for (int i = 50331648; i <= 60265363; i++) {
                 TerminatorSquad t = new TerminatorSquad(i);
-                if (list.add(t.getID2()))
-                    oos.writeInt(t.getID2());
+                if (list.add(t.getID()))
+                    oos.writeInt(t.getID());
             }
             oos.close();
             System.out.println(list.size());

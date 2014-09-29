@@ -23,10 +23,11 @@ public class Results implements Comparable<Results> {
         TURN = turn;
         CATCHING = catching;
         RETREAT = retreat;
-        if (WOUNDS - LOST > 0.0)
-            EF = (WOUNDS * 440) / (LOST * COST * TURN);
-        else
-            EF = 0;
+        //TODO: wounds and lost wounds [0, 1]?
+        //if (WOUNDS - LOST > 0.0)
+        EF = ((14 - TURN) * WOUNDS * (CATCHING * (1 - RETREAT))) / (COST * LOST);//(WOUNDS) / (LOST * COST);
+        //else
+        //    EF = (TURN)/((1+RETREAT) * COST * (LOST-WOUNDS));
     }
 
     public int compareTo(Results R) {
@@ -35,9 +36,9 @@ public class Results implements Comparable<Results> {
 
     @Override
     public String toString() {
-        TerminatorSquad t = new TerminatorSquad(ID);
+        InterceptorSquad t = new InterceptorSquad(ID);
         return "ID: " + ID +
-                "\nLast turn: " + TURN +
+                "\nLast turn: " + (TURN) / 2 +
                 "\nCatching: " + CATCHING +
                 "\nRetreating: " + RETREAT +
                 "\nEfficiency: " + EF +

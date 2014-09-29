@@ -30,7 +30,8 @@ public class RangedWeapon {
                 break;
             }
             case 1: {
-                stats.set(Stats.SHOTS, 4); //TODO: do this better
+                spr.template = true;
+                stats.set(Stats.SHOTS, 2); //Average result
                 stats.set(Stats.RANGE, 6);
                 stats.set(Stats.STR, 6);
                 stats.set(Stats.APW, 4);

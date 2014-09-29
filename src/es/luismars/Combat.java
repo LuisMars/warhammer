@@ -7,34 +7,45 @@ public class Combat {
 
     Squad a;
     Squad d;
-    int distance = 24;
+    int distance = 30;
     int turn = 0;
 
     String summary = "";
 
     public Combat(Squad s) {
         a = s;
-        d = new TerminatorSquad(59281552);
+        d = new TerminatorSquad("11");
     }
 
     public void assault() {
-        //TODO: better sweeping advances
-/*
+
         while (distance > 0) {
 
             turn++;
             a.wounds += shooting(a, d) * a.remaining();
             d.lost = a.wounds;
             distance -= a.squad[0].get(Stats.M);
-            if (distance < 0) break;
+            if (distance < 0) {
+                addSummary("Shooting");
+                break;
+            }
             //shoot deffensive
-            turn++
+            turn++;
             d.wounds += shooting(d, a) * d.remaining();
             a.lost = d.wounds;
             distance -= d.squad[0].get(Stats.M);
             addSummary("Shooting");
         }
-*/
+
+        if (turn % 2 == 1) {
+            d.wounds += defensive(d, a) * d.remaining();
+            a.lost = d.wounds;
+        } else {
+            a.wounds += defensive(a, d) * a.remaining();
+            d.lost = a.wounds;
+        }
+        addSummary("Defensive");
+
         while (turn <= 14 && a.canFight() && d.canFight()) {
             if (turn % 2 == 1)
                 combat(a, d);
@@ -48,10 +59,11 @@ public class Combat {
     }
 
     public void addSummary(String fase) {
-        summary += ("Turn: " + turn + " (" + fase + ")\nWounds: " + a.wounds + "\nLost: " + a.lost);
+        summary += ("Turn: " + (turn + 1) / 2 + " (" + fase + ")\nWounds: " + a.wounds + "\nLost: " + a.lost);
         summary += ("\nRemaining: " + a.remainingMinis() + "/" + d.remainingMinis());
         summary += ("\nRetreat: " + d.catching);
         summary += ("\nCatching: " + a.catching);
+        summary += (distance > 0) ? ("\nDistance: " + distance) : "";
         summary += ("\n-----------------------------\n");
     }
 
@@ -106,4 +118,11 @@ public class Combat {
         return w;
     }
 
+    public double defensive(Squad att, Squad def) {
+        double w = 0;
+        for (Stats s : att.squad) {
+            w += s.defensive(def.squad[0]);
+        }
+        return w;
+    }
 }

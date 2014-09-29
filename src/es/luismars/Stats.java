@@ -53,12 +53,27 @@ public class Stats {
         double wounds = 0;
         for (int i = 1; i <= get(Stats.SHOTS); i++) {
             if (distance <= get(RANGE)) {
-                if (rw.spr.rending)
+                if (rw.spr.template)
+                    wounds += (get(RANGE) - distance) * woundShooting(s, i) * saveShooting(s, i);
+                else if (rw.spr.rending)
                     wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
                 else
                     wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
             }
         }
+        return wounds;
+    }
+
+    public double defensive(Stats s) {
+        double wounds = 0;
+
+        for (int i = 1; i <= get(Stats.SHOTS); i++) {
+            if (rw.spr.rending)
+                wounds += shootDefensive(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
+            else
+                wounds += shootDefensive(s, i) * woundShooting(s, i) * saveShooting(s, i);
+        }
+
         return wounds;
     }
 
@@ -78,6 +93,18 @@ public class Stats {
     private double shoot(Stats s, int i) {
         double hits = Rules.shootRoll(get(Stats.BS));
 
+        if (rw.spr.rerollHit)
+            hits = Rules.reroll(hits);
+        else if (rw.spr.rerollOneHit)
+            hits = Rules.reroll1ofN(hits, i);
+
+        return hits;
+    }
+
+    private double shootDefensive(Stats s, int i) {
+        double hits = 1 / 6.0;
+        if (rw.spr.template)
+            hits = 1;
         if (rw.spr.rerollHit)
             hits = Rules.reroll(hits);
         else if (rw.spr.rerollOneHit)
