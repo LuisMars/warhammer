@@ -19,26 +19,30 @@ public class CCWeapon {
         stats.set(stats.AP,3);
 
         switch (ID) {
+            //Sword
             case 0: {
                 break;
             }
+            //Halberd
             case 1: {
                 stats.add(stats.S, 1);
                 cost += 2;
                 break;
             }
+            //Falchions
             case 2: {
                 stats.add(stats.A, 1);
                 cost +=4;
                 break;
             }
+            //Stave
             case 3: {
                 stats.add(stats.S, 2);
                 stats.set(stats.AP, 4);
                 cost += 5;
                 break;
             }
-
+            //Hammer
             case 4: {
                 stats.mult(stats.S, 2);
                 stats.set(stats.I, 1);
@@ -89,5 +93,12 @@ public class CCWeapon {
 
     public String getID() {
         return Utils.toBinStr(ID, 3);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CCWeapon)
+            return ID == ((CCWeapon) obj).ID;
+        return false;
     }
 }

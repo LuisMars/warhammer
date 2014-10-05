@@ -7,33 +7,34 @@ public class Combat {
 
     Squad a;
     Squad d;
-    int distance = 30;
+    int distance = 24;
     int turn = 0;
 
     String summary = "";
 
     public Combat(Squad s) {
         a = s;
-        d = new TerminatorSquad("11");
+        d = new GreyKnightSquad("Strike", "10");
     }
 
     public void assault() {
-
+        //TODO: maximize wounds, optimize movement
         while (distance > 0) {
 
             turn++;
+            distance -= a.squad[0].get(Stats.M);
             a.wounds += shooting(a, d) * a.remaining();
             d.lost = a.wounds;
-            distance -= a.squad[0].get(Stats.M);
+
             if (distance < 0) {
                 addSummary("Shooting");
                 break;
             }
-            //shoot deffensive
+            //shoot defensive
             turn++;
+            distance -= d.squad[0].get(Stats.M);
             d.wounds += shooting(d, a) * d.remaining();
             a.lost = d.wounds;
-            distance -= d.squad[0].get(Stats.M);
             addSummary("Shooting");
         }
 
@@ -59,12 +60,14 @@ public class Combat {
     }
 
     public void addSummary(String fase) {
-        summary += ("Turn: " + (turn + 1) / 2 + " (" + fase + ")\nWounds: " + a.wounds + "\nLost: " + a.lost);
-        summary += ("\nRemaining: " + a.remainingMinis() + "/" + d.remainingMinis());
-        summary += ("\nRetreat: " + d.catching);
-        summary += ("\nCatching: " + a.catching);
-        summary += (distance > 0) ? ("\nDistance: " + distance) : "";
-        summary += ("\n-----------------------------\n");
+        summary += ("Turn: " + (turn + 1) / 2 + " (" + fase + ")" +
+                "\n\tWounds: " + a.wounds +
+                "\n\tLost: " + a.lost) +
+                "\n\tRemaining: " + a.remainingMinis() + "/" + d.remainingMinis() +
+                "\n\tRetreat: " + d.catching +
+                "\n\tCatching: " + a.catching +
+                ((distance > 0) ? ("\n\tDistance: " + distance) : "") +
+                "\n----------------------------------\n";
     }
 
     public String toString() {
@@ -100,11 +103,11 @@ public class Combat {
         def.combatResult(woundsDefTot, woundsAttTot, att.squad[0]);
 
         if (def.canCatch()) {
-            att.lost = att.size * att.squad[0].get(Stats.W);
+            att.lost += att.size * att.squad[0].get(Stats.W);
             def.wounds = att.lost;
         }
         if (att.canCatch()) {
-            def.lost = def.size * def.squad[0].get(Stats.W);
+            def.lost += def.size * def.squad[0].get(Stats.W);
             att.wounds = def.lost;
         }
 

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Luis on 11/09/2014.
  */
-public class Stats {
+public class Stats implements Comparable {
 
     public static final int WS = 0;
     public static final int BS = 1;
@@ -28,15 +28,12 @@ public class Stats {
 
     public CCWeapon ccw;
     public RangedWeapon rw;
-
+    public SpecialRules spr = new SpecialRules();
     public String ID = "";
 
     private int[] baseStats = new int[16];
     private int[] stats = new int[16];
     private int cost;
-
-    public Stats() {
-    }
 
     public Stats(int[] s, CCWeapon cc, RangedWeapon r) {
 
@@ -51,10 +48,11 @@ public class Stats {
 
     public double shooting(Stats s, int distance) {
         double wounds = 0;
+        checkMovement();
         for (int i = 1; i <= get(Stats.SHOTS); i++) {
             if (distance <= get(RANGE)) {
                 if (rw.spr.template)
-                    wounds += (get(RANGE) - distance) * woundShooting(s, i) * saveShooting(s, i);
+                    wounds += Math.max(3, (get(RANGE) - distance)) * woundShooting(s, i) * saveShooting(s, i);
                 else if (rw.spr.rending)
                     wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
                 else
@@ -62,6 +60,19 @@ public class Stats {
             }
         }
         return wounds;
+    }
+
+    private void checkMovement() {
+        rw.updateStats(this);
+        if (!spr.shootHeavy) {
+            if (rw.spr.salvo) {
+                mult(SHOTS, 0.5);
+                mult(RANGE, 0.5);
+            } else if (rw.spr.heavy) {
+                mult(SHOTS, 0.5);
+                mult(RANGE, 0.5);
+            }
+        }
     }
 
     public double defensive(Stats s) {
@@ -184,7 +195,7 @@ public class Stats {
         stats[s] += c;
     }
 
-    public void mult(int s, int c) {
+    public void mult(int s, double c) {
         stats[s] *= c;
         stats[s] = Math.min(stats[s], 10);
     }
@@ -213,4 +224,22 @@ public class Stats {
         return ID;
     }
 
+
+    //TODO: Better hash and compareto
+    public boolean equals(Object o) {
+        if (o instanceof Stats)
+            return (cost == (((Stats) o).cost)) && rw.equals(((Stats) o).rw) && rw.equals(((Stats) o).rw);
+        return false;
+    }
+
+    public int hashCode() {
+        return Integer.parseInt(rw.getID() + ccw.getID());
+    }
+
+
+    @Override
+    public int compareTo(Object o) {
+        int c = ((Stats) o).cost;
+        return (cost > c ? -1 : (cost == c ? 0 : 1));
+    }
 }

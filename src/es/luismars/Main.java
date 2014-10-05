@@ -2,29 +2,30 @@ package es.luismars;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
 
-
-        InterceptorSquad t = new InterceptorSquad(58757264);
+/*
+        GreyKnightSquad t = new GreyKnightSquad("Interceptor", 55331659);
         Combat c = new Combat(t);
         c.assault();
         System.out.println(c  + "\n" + t);
-/*
-        //stuff();
-        combat("new_no_dups.dat", "testcombat.dat");
+*/
+
+        combat("Interceptor", "new_no_dups.dat", "testcombat.dat");
         top20("testcombat.dat");
 
         //generate("new_no_dups.dat");
 
-*/
+
     }
 
     public static void top20(String file) {
         List<Results> results = new ArrayList<Results>();
-
+        String type = "";
         try {
             //FileOutputStream fos = new FileOutputStream("vsStdTerm.cc");
             //ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -33,7 +34,7 @@ public class Main {
             FileInputStream fis = new FileInputStream(file);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
-
+            type = ois.readUTF();
             System.out.println("Processing...");
             while(true) {
 
@@ -46,7 +47,7 @@ public class Main {
                 double retreat = ois.readDouble();
                 //boolean hamerhand = ois.readBoolean();
 
-                results.add(new Results(ID, cost, wounds, lost, turn, catching, retreat));
+                results.add(new Results(type, ID, cost, wounds, lost, turn, catching, retreat));
 
             }
 
@@ -61,7 +62,7 @@ public class Main {
 
         int n = 0;
         for (int i = results.size() - 1; i > 0 && n < 10; i--) {
-            InterceptorSquad t = new InterceptorSquad(results.get(i).ID);
+            GreyKnightSquad t = new GreyKnightSquad(type, results.get(i).ID);
             if (true) {
                 System.out.println(results.get(i));
                 n++;
@@ -71,7 +72,7 @@ public class Main {
 
     }
 
-    public static void combat(String in, String out) {
+    public static void combat(String type, String in, String out) {
 
         try {
             System.out.println("Reading data...");
@@ -83,9 +84,9 @@ public class Main {
             ObjectInputStream ois = new ObjectInputStream(fis);
 
 
-
+            oos.writeUTF(type);
             while(true) {
-                InterceptorSquad t = new InterceptorSquad(ois.readInt());
+                GreyKnightSquad t = new GreyKnightSquad(type, ois.readInt());
 
                 Combat c = new Combat(t);
                 c.assault();
@@ -114,13 +115,13 @@ public class Main {
             Set list = new HashSet();
 
             for (int i = 131072; i <= 169875; i++) {
-                TerminatorSquad t = new TerminatorSquad(i);
+                GreyKnightSquad t = new GreyKnightSquad("T", i);
                 if (list.add(t.getID()))
                     oos.writeInt(t.getID());
             }
 
             for (int i = 50331648; i <= 60265363; i++) {
-                TerminatorSquad t = new TerminatorSquad(i);
+                GreyKnightSquad t = new GreyKnightSquad("T", i);
                 if (list.add(t.getID()))
                     oos.writeInt(t.getID());
             }
@@ -131,5 +132,16 @@ public class Main {
         }
 
 
+    }
+
+    public static void army() {
+
+        /*
+        1 -
+        Troops: Max 100 000
+        Elites Max 11 00 00
+        Fast Attack Max 10 00 00
+        Heavy Support Max 11 11 11
+         */
     }
 }

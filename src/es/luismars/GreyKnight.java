@@ -1,13 +1,10 @@
 package es.luismars;
 
-/**
- * Created by Luis on 20/09/2014.
- */
-public class Interceptor extends Stats {
+public class GreyKnight extends Stats {
 
     String items;
 
-    public Interceptor(int[] s, CCWeapon ccw, RangedWeapon rw, int id) {
+    public GreyKnight(int[] s, CCWeapon ccw, RangedWeapon rw, int id) {
         super(s, ccw, rw);
 
         ID += ccw.getID();
@@ -16,7 +13,7 @@ public class Interceptor extends Stats {
     }
 
     //For justicars
-    public Interceptor(int[] s, CCWeapon ccw, RangedWeapon rw, boolean digital, boolean mBombs, boolean TPH) {
+    public GreyKnight(int[] s, CCWeapon ccw, RangedWeapon rw, boolean digital, boolean mBombs, boolean TPH) {
         super(s, ccw, rw);
         ID = ccw.getID();
         ID += ccw.spr.rerollOneHit ? "01" : rw.spr.rerollOneHit ? "10" : "00";
@@ -24,10 +21,10 @@ public class Interceptor extends Stats {
     }
 
     public String toString() {
-        String res = "Interceptor ";
+        String res = "";
         if (ID.length() == 8)
-            res += "Justicar ";
-        res += "with: " + ccw.toString() + rw.toString() + (items == null ? "" : items) + "(" + getCost() + ")";
+            res += " Justicar";
+        res += " with:\t\t\t(" + getCost() + ")\n\t" + ccw.toString() + rw.toString() + (items == null ? "" : items);
 
         return res;
     }

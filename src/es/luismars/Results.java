@@ -4,6 +4,7 @@ package es.luismars;
  */
 public class Results implements Comparable<Results> {
 
+    String TYPE;
     int ID;
     int COST;
     double WOUNDS;
@@ -15,7 +16,8 @@ public class Results implements Comparable<Results> {
     double EF;
 
     //TODO: add cost of the other unit
-    public Results(int id, int cost, double wounds, double lost, int turn, double catching, double retreat) {
+    public Results(String type, int id, int cost, double wounds, double lost, int turn, double catching, double retreat) {
+        TYPE = type;
         ID = id;
         COST = cost;
         WOUNDS = wounds;
@@ -25,25 +27,27 @@ public class Results implements Comparable<Results> {
         RETREAT = retreat;
         //TODO: wounds and lost wounds [0, 1]?
         //if (WOUNDS - LOST > 0.0)
-        EF = ((14 - TURN) * WOUNDS * (CATCHING * (1 - RETREAT))) / (COST * LOST);//(WOUNDS) / (LOST * COST);
+        EF = ((7 - TURN / 2) * WOUNDS * ((1 + CATCHING) * (1 - RETREAT))) / (LOST);//(WOUNDS) / (LOST * COST);
         //else
         //    EF = (TURN)/((1+RETREAT) * COST * (LOST-WOUNDS));
     }
 
     public int compareTo(Results R) {
-        return (EF > R.EF) ? 1 : ((EF == R.EF) ? 0 : -1);
+        return (EF > R.EF) ? 1 : ((EF == R.EF) ? (LOST < R.LOST ? 1 : (LOST == R.LOST ? (COST < R.COST ? 1 : (COST == R.COST ? 0 : -1)) : -1)) : -1);
     }
 
     @Override
     public String toString() {
-        InterceptorSquad t = new InterceptorSquad(ID);
-        return "ID: " + ID +
-                "\nLast turn: " + (TURN) / 2 +
-                "\nCatching: " + CATCHING +
-                "\nRetreating: " + RETREAT +
-                "\nEfficiency: " + EF +
-                "\nWounds: " + WOUNDS +
-                "\nWounds lost: " + LOST + "\n\n" +
-                t + "\n-----------------------------------------------\n";
+        GreyKnightSquad t = new GreyKnightSquad(TYPE, ID);
+        return "\n\n===============================================\n" +
+                "-----------------------------------------------\n" +
+                TYPE + " Squad: " + ID +
+                "\n\tLast turn: " + (TURN) / 2 +
+                "\n\tCatching: " + CATCHING +
+                "\n\tRetreating: " + RETREAT +
+                "\n\tEfficiency: " + EF +
+                "\n\tWounds: " + WOUNDS +
+                "\n\tWounds lost: " + LOST + "\n\n" +
+                t + "===============================================\n";
     }
 }
