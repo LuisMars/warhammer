@@ -9,6 +9,10 @@ public class CCWeapon {
     SpecialRules spr = new SpecialRules();
 
 
+    public CCWeapon() {
+
+    }
+
     public CCWeapon(int WP, boolean MC, boolean DW) {
         ID = Math.min(4, WP);
         spr.rerollOneHit = MC;
@@ -65,23 +69,23 @@ public class CCWeapon {
 
         switch (ID) {
             case 0: {
-                res += "Sword, ";
+                res += "Sword";
                 break;
             }
             case 1: {
-                res += "Halberd, ";
+                res += "Halberd";
                 break;
             }
             case 2: {
-                res += "Falchions, ";
+                res += "Falchions";
                 break;
             }
             case 3: {
-                res += "Stave, ";
+                res += "Stave";
                 break;
             }
             case 4: {
-                res += "Hammer, ";
+                res += "Hammer";
                 break;
             }
             default:

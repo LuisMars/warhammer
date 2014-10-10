@@ -1,53 +1,59 @@
 package es.luismars;
+
+import java.awt.*;
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.*;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        Toolkit.getDefaultToolkit().beep();
+        long iniTime = System.currentTimeMillis();
 
-/*
-        GreyKnightSquad t = new GreyKnightSquad("Interceptor", 55331659);
-        Combat c = new Combat(t);
-        c.assault();
-        System.out.println(c  + "\n" + t);
-*/
+        GreyKnightSquad a = new GreyKnightSquad("Dread", "1");
 
-        combat("Interceptor", "new_no_dups.dat", "testcombat.dat");
+        //GreyKnightSquad d = new GreyKnightSquad("Terminator", "10111111111111111111111111");
+        //Combat c = new Combat(d,a);
+        //c.assault();
+        //System.out.println(c  + "\n" + a + "\n" + d);
+
+
+        combat("Interceptor", a, "new_no_dups.dat", "testcombat.dat");
         top20("testcombat.dat");
 
         //generate("new_no_dups.dat");
+        System.out.println("Completed in " + Utils.time(System.currentTimeMillis() - iniTime));
 
-
+        Toolkit.getDefaultToolkit().beep();
     }
 
     public static void top20(String file) {
         List<Results> results = new ArrayList<Results>();
         String type = "";
         try {
-            //FileOutputStream fos = new FileOutputStream("vsStdTerm.cc");
-            //ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-
             FileInputStream fis = new FileInputStream(file);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
             type = ois.readUTF();
+            int enemySize = ois.readInt();
             System.out.println("Processing...");
             while(true) {
-
+                int size = ois.readInt();
                 int ID = ois.readInt();
                 int cost = ois.readInt();
+
                 double wounds = ois.readDouble();
                 double lost = ois.readDouble();
-                int turn = ois.readInt();
-                double catching = ois.readDouble();
-                double retreat = ois.readDouble();
-                //boolean hamerhand = ois.readBoolean();
 
-                results.add(new Results(type, ID, cost, wounds, lost, turn, catching, retreat));
+                int turn = ois.readInt();
+
+                double defRetreats = ois.readDouble();
+                double attRetreats = ois.readDouble();
+
+                double attSweeps = ois.readDouble();
+                double defSweeps = ois.readDouble();
+
+                results.add(new Results(type, ID, size, cost, wounds, lost, turn, defRetreats, attRetreats, attSweeps, defSweeps, enemySize));
 
             }
 
@@ -63,7 +69,7 @@ public class Main {
         int n = 0;
         for (int i = results.size() - 1; i > 0 && n < 10; i--) {
             GreyKnightSquad t = new GreyKnightSquad(type, results.get(i).ID);
-            if (true) {
+            if (!t.squad[0].spr.mBombs && !t.squad[0].spr.TPH) {
                 System.out.println(results.get(i));
                 n++;
             }
@@ -72,7 +78,7 @@ public class Main {
 
     }
 
-    public static void combat(String type, String in, String out) {
+    public static void combat(String type, Squad enemy, String in, String out) {
 
         try {
             System.out.println("Reading data...");
@@ -85,20 +91,29 @@ public class Main {
 
 
             oos.writeUTF(type);
+            oos.writeInt(enemy.size);
+
             while(true) {
                 GreyKnightSquad t = new GreyKnightSquad(type, ois.readInt());
 
-                Combat c = new Combat(t);
-                c.assault();
+                oos.writeInt(t.size);
                 oos.writeInt(t.getID());
                 oos.writeInt(t.getCost());
+
+                Combat c = new Combat(t, enemy);
+                c.assault();
+
                 oos.writeDouble(c.a.wounds);
                 oos.writeDouble(c.a.lost);
-                oos.writeInt(c.turn);
-                oos.writeDouble(c.a.catching);
-                oos.writeDouble(c.d.catching);
-                //oos.writeBoolean(false);
 
+                oos.writeInt(c.turn);
+
+                oos.writeDouble(c.a.defRetreats);
+                oos.writeDouble(c.d.defRetreats);
+
+                oos.writeDouble(c.a.canSweep);
+                oos.writeDouble(c.d.canSweep);
+                enemy.reset();
             }
 
 

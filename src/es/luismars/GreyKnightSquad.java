@@ -7,8 +7,6 @@ import java.util.*;
  */
 public class GreyKnightSquad extends Squad {
 
-    String TYPE;
-
     int[] justStats;
     int[] stats;
     int unitCost;
@@ -31,6 +29,13 @@ public class GreyKnightSquad extends Squad {
     public void set() {
 
         setBase();
+
+        if (TYPE.charAt(0) == 'D') {
+            size = 1;
+            squad = new GreyKnight[size];
+            squad[0] = setDreadknight();
+            return;
+        }
 
         String IDs = Integer.toBinaryString(ID).substring(1);
         while (IDs.length() < 32)
@@ -62,9 +67,16 @@ public class GreyKnightSquad extends Squad {
             squad[9] = setSpecial(Utils.read(IDs, 20, 23), Utils.read(IDs, 23, 25));
 
         for (Stats s : squad) {
-            if (TYPE.charAt(0) == 'T' || TYPE.charAt(0) == 'I')
+            if (TYPE.charAt(0) == 'T') {
                 s.spr.shootHeavy = true;
+                s.spr.SweepingAdvance = false;
+            }
         }
+    }
+
+    public GreyKnight setDreadknight() {
+        return new GreyKnight(justStats, new CCWeapon(), new RangedWeapon(), 0);
+
     }
 
     public GreyKnight setJusticar(int WP, int MC, boolean digital, boolean mBombs, boolean TPH) {
@@ -78,10 +90,13 @@ public class GreyKnightSquad extends Squad {
 
         t.setCost(justCost + (digital ? 10 : 0) + (MC > 0 ? 10 : 0) + (mBombs ? 5 : 0) + (TPH ? 10 : 0) + ccw.getCost());
 
+        if (mBombs) t.spr.mBombs = true;
+        if (TPH) t.spr.TPH = true;
+
         t.items = (digital ? "\n" +
-                "\t\tDigital weapons" : "") + (mBombs ? "\n" +
-                "\t\tMelta bombs" : "") + (TPH ? "\n" +
-                "\t\tTeleport homer" : "");
+                "\tDigital weapons" : "") + (mBombs ? "\n" +
+                "\tMelta bombs" : "") + (TPH ? "\n" +
+                "\tTeleport homer" : "");
         return t;
     }
 
@@ -121,34 +136,35 @@ public class GreyKnightSquad extends Squad {
     public void setID() {
 
         String s = "1";
+        if (squad.length != 1) {
+            if (squad.length == 5)
+                s += "0";
+            else if (squad.length == 10)
+                s += "1";
+            else ID = 0;
 
-        if (squad.length == 5)
-            s += "0";
-        else if (squad.length == 10)
-            s += "1";
-        else ID = 0;
+            s += squad[0].getID();
 
-        s += squad[0].getID();
+            s += squad[1].getID();
 
-        s += squad[1].getID();
-
-        if (squad.length == 10 && ((squad[4].ccw.ID < squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID < squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID)))
-            s += squad[9].getID();
-        else
-            s += squad[4].getID();
-
-
-        if (squad.length == 10) {
-            s += squad[5].getID();
-            if ((squad[4].ccw.ID >= squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID >= squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID))
+            if (squad.length == 10 && ((squad[4].ccw.ID < squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID < squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID)))
                 s += squad[9].getID();
             else
                 s += squad[4].getID();
-        }
 
-        //while (s.length() < 31)
-        //    s += "0";
-        ID = Integer.parseInt(s, 2);
+
+            if (squad.length == 10) {
+                s += squad[5].getID();
+                if ((squad[4].ccw.ID >= squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID >= squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID))
+                    s += squad[9].getID();
+                else
+                    s += squad[4].getID();
+            }
+
+            //while (s.length() < 31)
+            //    s += "0";
+            ID = Integer.parseInt(s, 2);
+        }
     }
 
     @Override
@@ -207,6 +223,10 @@ public class GreyKnightSquad extends Squad {
 
                 extraRWcost = 0;
                 break;
+            }
+            case 'D': {
+                justStats = new int[]{5, 4, 10, 6, 4, 4, 4, 10, 2, 5, 2, 0, 0, 0, 0, 12};
+                unitCost = 130;
             }
         }
     }

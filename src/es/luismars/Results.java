@@ -10,26 +10,35 @@ public class Results implements Comparable<Results> {
     double WOUNDS;
     double LOST;
     int TURN;
-    double CATCHING;
-    double RETREAT;
+    double DEFRETREATS;
+    double ATTRETREATS;
+
+    double ATTSWEEPS;
+    double DEFSWEEPS;
+
+    double SIZE;
+    double ENEMYSIZE;
 
     double EF;
 
     //TODO: add cost of the other unit
-    public Results(String type, int id, int cost, double wounds, double lost, int turn, double catching, double retreat) {
+    public Results(String type, int id, int size, int cost, double wounds, double lost, int turn,
+                   double defRetreats, double attRetreats, double attSweeps, double defSweeps, int enemySize) {
         TYPE = type;
         ID = id;
         COST = cost;
-        WOUNDS = wounds;
-        LOST = lost;
+        WOUNDS = Math.min(enemySize, wounds);
+        LOST = Math.min(size, lost);
         TURN = turn;
-        CATCHING = catching;
-        RETREAT = retreat;
-        //TODO: wounds and lost wounds [0, 1]?
-        //if (WOUNDS - LOST > 0.0)
-        EF = ((7 - TURN / 2) * WOUNDS * ((1 + CATCHING) * (1 - RETREAT))) / (LOST);//(WOUNDS) / (LOST * COST);
-        //else
-        //    EF = (TURN)/((1+RETREAT) * COST * (LOST-WOUNDS));
+        DEFRETREATS = defRetreats;
+        ATTRETREATS = attRetreats;
+        ATTSWEEPS = attSweeps;
+        DEFSWEEPS = defSweeps;
+
+        SIZE = size;
+        ENEMYSIZE = enemySize;
+        EF = (WOUNDS / ENEMYSIZE) * (SIZE / LOST) * (1 + DEFRETREATS) * (1 - ATTRETREATS) * (1 + ATTSWEEPS) * (1 - DEFSWEEPS);
+
     }
 
     public int compareTo(Results R) {
@@ -42,12 +51,14 @@ public class Results implements Comparable<Results> {
         return "\n\n===============================================\n" +
                 "-----------------------------------------------\n" +
                 TYPE + " Squad: " + ID +
-                "\n\tLast turn: " + (TURN) / 2 +
-                "\n\tCatching: " + CATCHING +
-                "\n\tRetreating: " + RETREAT +
-                "\n\tEfficiency: " + EF +
-                "\n\tWounds: " + WOUNDS +
-                "\n\tWounds lost: " + LOST + "\n\n" +
+                "\n\tLast turn:\t\t" + (TURN) / 2 +
+                "\n\tDef. retreats:\t" + DEFRETREATS +
+                "\n\tAtt. sweeps:\t" + ATTSWEEPS +
+                "\n\tAtt. retreats:\t" + ATTRETREATS +
+                "\n\tDef. sweeps:\t" + DEFSWEEPS +
+                "\n\tEfficiency:\t\t" + EF +
+                "\n\tWounds:\t\t\t" + WOUNDS / ENEMYSIZE +
+                "\n\tWounds lost:\t" + LOST / SIZE + "\n\n" +
                 t + "===============================================\n";
     }
 }

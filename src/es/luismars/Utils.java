@@ -15,4 +15,12 @@ public class Utils {
         return Integer.parseInt(ID.substring(ini, end), 2);
     }
 
+    public static String time(long millis) {
+
+        long second = (millis / 1000) % 60;
+        long minute = (millis / (1000 * 60)) % 60;
+        long hour = (millis / (1000 * 60 * 60)) % 24;
+
+        return String.format("%02dh %02dm %02ds", hour, minute, second);
+    }
 }

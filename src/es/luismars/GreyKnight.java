@@ -24,7 +24,7 @@ public class GreyKnight extends Stats {
         String res = "";
         if (ID.length() == 8)
             res += " Justicar";
-        res += " with:\t\t\t(" + getCost() + ")\n\t" + ccw.toString() + rw.toString() + (items == null ? "" : items);
+        res += " with:\t" + (ID.length() == 8 ? "" : "\t\t") + "(" + getCost() + ")\n\t" + ccw.toString() + "\n\t" + rw.toString() + (items == null ? "" : items);
 
         return res;
     }

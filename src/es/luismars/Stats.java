@@ -46,9 +46,9 @@ public class Stats implements Comparable {
 
     }
 
-    public double shooting(Stats s, int distance) {
+    public double shooting(Stats s, int distance, boolean moved) {
         double wounds = 0;
-        checkMovement();
+        checkMovement(moved);
         for (int i = 1; i <= get(Stats.SHOTS); i++) {
             if (distance <= get(RANGE)) {
                 if (rw.spr.template)
@@ -62,15 +62,15 @@ public class Stats implements Comparable {
         return wounds;
     }
 
-    private void checkMovement() {
+    private void checkMovement(boolean moved) {
         rw.updateStats(this);
-        if (!spr.shootHeavy) {
+        if (!spr.shootHeavy && moved) {
             if (rw.spr.salvo) {
                 mult(SHOTS, 0.5);
                 mult(RANGE, 0.5);
             } else if (rw.spr.heavy) {
-                mult(SHOTS, 0.5);
-                mult(RANGE, 0.5);
+                mult(SHOTS, 0);
+                mult(RANGE, 0);
             }
         }
     }
