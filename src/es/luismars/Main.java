@@ -10,18 +10,20 @@ public class Main {
         Toolkit.getDefaultToolkit().beep();
         long iniTime = System.currentTimeMillis();
 
-        GreyKnightSquad a = new GreyKnightSquad("Dread", "1");
+        GreyKnightSquad a = new GreyKnightSquad("DreadKnight", 218);
 
-        //GreyKnightSquad d = new GreyKnightSquad("Terminator", "10111111111111111111111111");
-        //Combat c = new Combat(d,a);
-        //c.assault();
-        //System.out.println(c  + "\n" + a + "\n" + d);
+        GreyKnightSquad d = new GreyKnightSquad("Terminator", 59540352);
+/*
+        Combat c = new Combat(a,d);
+        c.assault();
+        System.out.println(c  + "\n" + a + "\n" + d);
+*/
 
-
-        combat("Interceptor", a, "new_no_dups.dat", "testcombat.dat");
+        //combat("DreadKnight", a, "dreadknight.dat", "testcombat.dat");
+        combat("Strike", a, "defaultGKsquad.dat", "testcombat.dat");
         top20("testcombat.dat");
 
-        //generate("new_no_dups.dat");
+        //generate("dreadknight.dat");
         System.out.println("Completed in " + Utils.time(System.currentTimeMillis() - iniTime));
 
         Toolkit.getDefaultToolkit().beep();
@@ -91,12 +93,12 @@ public class Main {
 
 
             oos.writeUTF(type);
-            oos.writeInt(enemy.size);
+            oos.writeInt(enemy.getWoundSize());
 
             while(true) {
                 GreyKnightSquad t = new GreyKnightSquad(type, ois.readInt());
 
-                oos.writeInt(t.size);
+                oos.writeInt(t.getWoundSize());
                 oos.writeInt(t.getID());
                 oos.writeInt(t.getCost());
 
@@ -128,18 +130,21 @@ public class Main {
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
             Set list = new HashSet();
-
-            for (int i = 131072; i <= 169875; i++) {
-                GreyKnightSquad t = new GreyKnightSquad("T", i);
-                if (list.add(t.getID()))
+            for (int i = 0; i <= 100000; i++) {
+                GreyKnightSquad t = new GreyKnightSquad("Dreadknight", i);
+                if (list.add(t.getID())) {
                     oos.writeInt(t.getID());
+                    //System.out.println(t.getID());
+                }
             }
 
+/*
             for (int i = 50331648; i <= 60265363; i++) {
                 GreyKnightSquad t = new GreyKnightSquad("T", i);
                 if (list.add(t.getID()))
                     oos.writeInt(t.getID());
             }
+*/
             oos.close();
             System.out.println(list.size());
         } catch (IOException e) {

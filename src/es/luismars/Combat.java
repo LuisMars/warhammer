@@ -1,13 +1,10 @@
 package es.luismars;
 
-/**
- * Created by Luis on 13/09/2014.
- */
 public class Combat {
 
     Squad a;
     Squad d;
-    int distance = 35;
+    int distance = 6;
     int turn = 0;
 
     String summary = "";
@@ -16,6 +13,7 @@ public class Combat {
         a = s;
         d = e;
     }
+
     public void assault() {
         addSummary("Initial state");
         while (turn <= 14 && a.canFight() && d.canFight()) {
@@ -56,8 +54,7 @@ public class Combat {
             if (distance != 1) {
                 distance = 1;
                 att.tempWounds = shooting(att, def, true) * att.remaining();
-            }
-            else
+            } else
                 att.tempWounds = shooting(att, def, false) * att.remaining();
         }
         // if is save to assault
@@ -81,6 +78,7 @@ public class Combat {
                 distance = tempD - i;
 
                 double tempWounds = shooting(att, def, mov != 0) * att.remaining();
+
                 if (tempWounds > att.tempWounds) {
                     att.tempWounds = tempWounds;
                     bestM = mov;
@@ -107,8 +105,10 @@ public class Combat {
                 "\n\tWounds:\t\t" + a.wounds +
                 "\n\tLost:\t\t" + a.lost +
                 "\n\tRemaining:\t" + a.remainingMinis() + "(" + a.size + ") / " + d.remainingMinis() + "(" + d.size + ")" +
-                "\n\tRetreat:\t" + d.defRetreats +
-                "\n\tCatching:\t" + a.defRetreats +
+                "\n\tDef. retreats:\t" + d.defRetreats +
+                "\n\tAtt. sweeps:\t" + a.canSweep +
+                "\n\tAtt. retreats::\t" + a.defRetreats +
+                "\n\tDef. sweeps:\t" + d.canSweep +
                 (turn % 2 == 1 ? "\n==================================\n" : "\n==================================\n\n==================================\n");
     }
 
@@ -122,13 +122,26 @@ public class Combat {
         for (int i = 10; i >= 0; i--) {
             double woundsAtt = 0;
             double woundsDef = 0;
-
+            //TODO: group both
             for (Stats s : att.squad) {
-                woundsAtt += s.combat(def.squad[0], i) * att.remaining();
+                double w = s.combat(def.squad[0], i) * att.remaining();
+
+                if (s.get(Stats.S) >= 2 * def.squad[0].get(Stats.T) && def.squad[0].get(Stats.W) > 1) {
+                    w *= def.squad[0].get(Stats.W);
+                }
+
+                woundsAtt += w;
+
             }
 
             for (Stats s : def.squad) {
-                woundsDef += s.combat(att.squad[0], i) * def.remaining();
+                double w = s.combat(att.squad[0], i) * def.remaining();
+
+                if (s.get(Stats.S) >= 2 * att.squad[0].get(Stats.T) && att.squad[0].get(Stats.W) > 1) {
+                    w *= att.squad[0].get(Stats.W);
+                }
+
+                woundsAtt += w;
             }
 
             woundsAttTot += woundsAtt;
@@ -160,7 +173,7 @@ public class Combat {
     public double shooting(Squad att, Squad def, boolean moved) {
         double w = 0;
         for (Stats s : att.squad) {
-            w += s.shooting(def.squad[0], distance, moved);
+            w += s.shooting(def.squad[0], def.size, distance, moved);
         }
         return w;
     }

@@ -8,8 +8,8 @@ public class RangedWeapon {
     int cost;
     SpecialRules spr = new SpecialRules();
 
-    public RangedWeapon () {
-        ID = 0;
+    public RangedWeapon(int id) {
+        ID = id;
     }
 
     public RangedWeapon(int id, boolean MC, boolean DW) {
@@ -34,7 +34,7 @@ public class RangedWeapon {
                 spr.template = true;
                 stats.set(Stats.SHOTS, 2); //Average result
                 stats.set(Stats.RANGE, 6);
-                stats.set(Stats.STR, 6);
+                stats.set(Stats.STR, 8);
                 stats.set(Stats.APW, 4);
                 cost = 5;
                 break;
@@ -57,6 +57,46 @@ public class RangedWeapon {
                 stats.set(Stats.STR, 7);
                 stats.set(Stats.APW, 4);
                 cost = 15;
+                break;
+            }
+            //Heavy incinerator
+            case 4: {
+                spr.template = true;
+                stats.set(Stats.SHOTS, 2); //Average result
+                stats.set(Stats.RANGE, 14);
+                stats.set(Stats.STR, 6);
+                stats.set(Stats.APW, 4);
+                cost = 20;
+                break;
+            }
+            //Gatling Psilencer
+            case 5: {
+                spr.heavy = true;
+                stats.set(Stats.SHOTS, 12);
+                stats.set(Stats.RANGE, 24);
+                stats.set(Stats.STR, 4);
+                stats.set(Stats.APW, 7);
+                cost = 30;
+                break;
+            }
+            //Heavy Psycanon
+            case 6: {
+                //TODO: add area
+                spr.salvo = true;
+                stats.set(Stats.SHOTS, 6);
+                stats.set(Stats.RANGE, 24);
+                stats.set(Stats.STR, 7);
+                stats.set(Stats.APW, 4);
+                cost = 35;
+                break;
+            }
+            //Nothing
+            case 7: {
+                stats.set(Stats.SHOTS, 0);
+                stats.set(Stats.RANGE, 0);
+                stats.set(Stats.STR, 0);
+                stats.set(Stats.APW, 0);
+                cost = 0;
                 break;
             }
         }
@@ -87,6 +127,18 @@ public class RangedWeapon {
                 res += "Psycannon ";
                 break;
             }
+            case 4: {
+                res += "Heavy Incinerator ";
+                break;
+            }
+            case 5: {
+                res += "Gatling Psilencer ";
+                break;
+            }
+            case 6: {
+                res += "Heavy Psycannon";
+                break;
+            }
         }
 
         return res;
@@ -94,6 +146,10 @@ public class RangedWeapon {
 
     public String getID() {
         return Utils.toBinStr(ID, 2);
+    }
+
+    public boolean exists() {
+        return ID != 7;
     }
 
     @Override

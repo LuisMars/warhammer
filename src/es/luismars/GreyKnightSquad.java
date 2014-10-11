@@ -2,9 +2,6 @@ package es.luismars;
 
 import java.util.*;
 
-/**
- * Created by Luis on 20/09/2014.
- */
 public class GreyKnightSquad extends Squad {
 
     int[] justStats;
@@ -30,14 +27,48 @@ public class GreyKnightSquad extends Squad {
 
         setBase();
 
-        if (TYPE.charAt(0) == 'D') {
-            size = 1;
-            squad = new GreyKnight[size];
-            squad[0] = setDreadknight();
-            return;
-        }
-
         String IDs = Integer.toBinaryString(ID).substring(1);
+
+        if (TYPE.charAt(0) == 'D') {
+            loadDreadKnight(IDs);
+        } else {
+            loadDefaultSquad(IDs);
+        }
+        setWoundSize();
+    }
+
+    private void loadDreadKnight(String IDs) {
+        while (IDs.length() < 32)
+            IDs += "0";
+        size = 1;
+        squad = new GreyKnight[size];
+
+        boolean a = Utils.read(IDs, 3, 4) == 1;
+        boolean b = Utils.read(IDs, 4, 5) == 1;
+        boolean c = Utils.read(IDs, 5, 6) == 1;
+
+        int rw1 = 7;
+        int rw2 = 7;
+
+        if (a) {
+            rw1 = 4;
+            if (b)
+                rw2 = 5;
+            else if (c)
+                rw2 = 6;
+        } else if (b) {
+            rw1 = 5;
+            if (c)
+                rw2 = 6;
+        } else if (c)
+            rw1 = 6;
+
+
+        squad[0] = setDreadknight(Utils.read(IDs, 0, 3), rw1, rw2, Utils.read(IDs, 6, 7) == 1);
+        squad[0].spr.shootHeavy = true;
+    }
+
+    private void loadDefaultSquad(String IDs) {
         while (IDs.length() < 32)
             IDs += "0";
         if (IDs.charAt(0) == '0') {
@@ -71,11 +102,28 @@ public class GreyKnightSquad extends Squad {
                 s.spr.shootHeavy = true;
                 s.spr.SweepingAdvance = false;
             }
+            if (TYPE.charAt(0) == 'D') {
+                s.spr.shootHeavy = true;
+            }
         }
     }
 
-    public GreyKnight setDreadknight() {
-        return new GreyKnight(justStats, new CCWeapon(), new RangedWeapon(), 0);
+    public GreyKnight setDreadknight(int WP, int RW1, int RW2, boolean PT) {
+
+        WP = Math.max(4, Math.min(6, WP));
+
+        CCWeapon ccw = new CCWeapon(WP);
+
+        RangedWeapon rw = new RangedWeapon(RW1);
+
+        RangedWeapon rw2 = new RangedWeapon(RW2);
+
+        GreyKnight d = new GreyKnight(stats, ccw, rw, rw2, PT);
+
+        d.setCost(unitCost + d.ccw.getCost() + d.rw.getCost() + d.rw2.getCost() + (PT ? 30 : 0));
+
+
+        return d;
 
     }
 
@@ -102,9 +150,9 @@ public class GreyKnightSquad extends Squad {
 
     public GreyKnight setTroop(int WP) {
 
-        CCWeapon ccw = new CCWeapon(WP, false, false);
+        CCWeapon ccw = new CCWeapon(WP);
 
-        RangedWeapon rw = new RangedWeapon(0, false, false);
+        RangedWeapon rw = new RangedWeapon(0);
 
         GreyKnight t = new GreyKnight(stats, ccw, rw, 1);
 
@@ -115,9 +163,9 @@ public class GreyKnightSquad extends Squad {
 
     public GreyKnight setSpecial(int WP, int RW) {
 
-        CCWeapon ccw = new CCWeapon(WP, false, false);
+        CCWeapon ccw = new CCWeapon(WP);
 
-        RangedWeapon rw = new RangedWeapon(RW, false, false);
+        RangedWeapon rw = new RangedWeapon(RW);
 
         GreyKnight t = new GreyKnight(stats, ccw, rw, 2);
 
@@ -131,7 +179,6 @@ public class GreyKnightSquad extends Squad {
         for (Stats t : squad)
             cost += t.getCost();
     }
-
 
     public void setID() {
 
@@ -163,8 +210,11 @@ public class GreyKnightSquad extends Squad {
 
             //while (s.length() < 31)
             //    s += "0";
-            ID = Integer.parseInt(s, 2);
+        } else {
+            s += squad[0].getID();
         }
+
+        ID = Integer.parseInt(s, 2);
     }
 
     @Override
@@ -179,6 +229,7 @@ public class GreyKnightSquad extends Squad {
         HashSet<Stats> set = new HashSet<Stats>(asList);
         List<Stats> sorted = new ArrayList<Stats>(set);
         Collections.sort(sorted);
+
         for (Stats t : sorted) {
             s += Collections.frequency(asList, t) + "x " + TYPE + t.toString() + "\n";
         }
@@ -225,9 +276,10 @@ public class GreyKnightSquad extends Squad {
                 break;
             }
             case 'D': {
-                justStats = new int[]{5, 4, 10, 6, 4, 4, 4, 10, 2, 5, 2, 0, 0, 0, 0, 12};
+                stats = new int[]{5, 4, 6, 5/*6*/, 4, 4, 4, 10, 2, 5, 2, 0, 0, 0, 0, 6};
                 unitCost = 130;
             }
         }
     }
+
 }

@@ -28,6 +28,7 @@ public class Stats implements Comparable {
 
     public CCWeapon ccw;
     public RangedWeapon rw;
+    public RangedWeapon rw2;
     public SpecialRules spr = new SpecialRules();
     public String ID = "";
 
@@ -36,27 +37,44 @@ public class Stats implements Comparable {
     private int cost;
 
     public Stats(int[] s, CCWeapon cc, RangedWeapon r) {
+        this(s, cc, r, null);
+    }
 
+    public Stats(int[] s, CCWeapon cc, RangedWeapon r, RangedWeapon r2) {
         baseStats = s;
         stats = baseStats.clone();
         ccw = cc;
         rw = r;
+        rw2 = r2;
         ccw.updateStats(this);
         rw.updateStats(this);
-
+        if (rw2 != null)
+            rw2.updateStats(this);
     }
 
-    public double shooting(Stats s, int distance, boolean moved) {
+    public double shooting(Stats s, int size, int distance, boolean moved) {
         double wounds = 0;
+
         checkMovement(moved);
-        for (int i = 1; i <= get(Stats.SHOTS); i++) {
-            if (distance <= get(RANGE)) {
-                if (rw.spr.template)
-                    wounds += Math.max(3, (get(RANGE) - distance)) * woundShooting(s, i) * saveShooting(s, i);
-                else if (rw.spr.rending)
-                    wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
-                else
-                    wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
+        wounds += shootWeapon(s, size, rw, distance);
+        wounds += shootWeapon(s, size, rw2, distance);
+
+        return wounds;
+    }
+
+    private double shootWeapon(Stats s, int size, RangedWeapon rw, int distance) {
+        double wounds = 0;
+        if (rw != null) {
+            rw.updateStats(this);
+            for (int i = 1; i <= get(Stats.SHOTS); i++) {
+                if (distance <= get(RANGE)) { //TODO: before for
+                    if (rw.spr.template)
+                        wounds += Math.min(size / 2, Math.max(size / 4, (get(RANGE) - distance))) * woundShooting(s, i) * saveShooting(s, i);
+                    else if (rw.spr.rending)
+                        wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
+                    else
+                        wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
+                }
             }
         }
         return wounds;
@@ -84,20 +102,17 @@ public class Stats implements Comparable {
             else
                 wounds += shootDefensive(s, i) * woundShooting(s, i) * saveShooting(s, i);
         }
-
         return wounds;
     }
 
+    //TODO: extra attacks
     public double combat(Stats s, int init) {
         double wounds = 0;
         if (init == get(I)) {
             for (int i = 1; i <= get(A); i++) {
                 wounds += hit(s, i) * wound(s, i) * save(s, i);
-                //if (get(S) >= s.get(T) && s.get(W) > 1) //TODO: instant death
             }
-
         }
-
         return wounds;
     }
 
@@ -169,7 +184,6 @@ public class Stats implements Comparable {
         else if (ccw.spr.rerollOneWound)
             wounds = Rules.reroll1ofN(wounds, i);
 
-
         return wounds;
 
     }
@@ -220,6 +234,7 @@ public class Stats implements Comparable {
         cost += c;
     }
 
+
     public String getID() {
         return ID;
     }
@@ -227,9 +242,7 @@ public class Stats implements Comparable {
 
     //TODO: Better hash and compareto
     public boolean equals(Object o) {
-        if (o instanceof Stats)
-            return (cost == (((Stats) o).cost)) && rw.equals(((Stats) o).rw) && rw.equals(((Stats) o).rw);
-        return false;
+        return o instanceof Stats && (cost == (((Stats) o).cost)) && rw.equals(((Stats) o).rw) && rw.equals(((Stats) o).rw);
     }
 
     public int hashCode() {
