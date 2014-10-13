@@ -217,28 +217,6 @@ public class GreyKnightSquad extends Squad {
         ID = Integer.parseInt(s, 2);
     }
 
-    @Override
-    public String toString() {
-
-        String s = "-----------------------------------------------\n";
-
-        //for (Stats t : squad)
-        //    s += TYPE + t.toString() + "\n";
-        List<Stats> asList = Arrays.asList(squad);
-
-        HashSet<Stats> set = new HashSet<Stats>(asList);
-        List<Stats> sorted = new ArrayList<Stats>(set);
-        Collections.sort(sorted);
-
-        for (Stats t : sorted) {
-            s += Collections.frequency(asList, t) + "x " + TYPE + t.toString() + "\n";
-        }
-
-        s += "-----------------------------------------------\n";
-        s += "\tCost: " + getCost() + "\n";
-        s += "-----------------------------------------------\n";
-        return s;
-    }
 
     private void setBase() {
         switch (TYPE.charAt(0)) {
@@ -276,7 +254,7 @@ public class GreyKnightSquad extends Squad {
                 break;
             }
             case 'D': {
-                stats = new int[]{5, 4, 6, 5/*6*/, 4, 4, 4, 10, 2, 5, 2, 0, 0, 0, 0, 6};
+                stats = new int[]{5, 4, 6, 6, 4, 4, 4, 10, 2, 5, 2, 0, 0, 0, 0, 6};
                 unitCost = 130;
             }
         }

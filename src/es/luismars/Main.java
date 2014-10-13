@@ -10,17 +10,20 @@ public class Main {
         Toolkit.getDefaultToolkit().beep();
         long iniTime = System.currentTimeMillis();
 
-        GreyKnightSquad a = new GreyKnightSquad("DreadKnight", 218);
 
-        GreyKnightSquad d = new GreyKnightSquad("Terminator", 59540352);
+        EldarSquad a = new EldarSquad("WraithKnight");
+        //GreyKnightSquad d = new GreyKnightSquad("Strike", 59540352);
+
+        //GreyKnightSquad a = new GreyKnightSquad("Interceptor", 59540352);
 /*
         Combat c = new Combat(a,d);
         c.assault();
         System.out.println(c  + "\n" + a + "\n" + d);
 */
 
-        //combat("DreadKnight", a, "dreadknight.dat", "testcombat.dat");
-        combat("Strike", a, "defaultGKsquad.dat", "testcombat.dat");
+
+        combat("DreadKnight", a, "dreadknight.dat", "testcombat.dat");
+        //combat("Strike", a, "defaultGKsquad.dat", "testcombat.dat");
         top20("testcombat.dat");
 
         //generate("dreadknight.dat");
@@ -38,6 +41,8 @@ public class Main {
 
             type = ois.readUTF();
             int enemySize = ois.readInt();
+            int enemyCost = ois.readInt();
+
             System.out.println("Processing...");
             while(true) {
                 int size = ois.readInt();
@@ -55,7 +60,7 @@ public class Main {
                 double attSweeps = ois.readDouble();
                 double defSweeps = ois.readDouble();
 
-                results.add(new Results(type, ID, size, cost, wounds, lost, turn, defRetreats, attRetreats, attSweeps, defSweeps, enemySize));
+                results.add(new Results(type, ID, size, cost, enemyCost, wounds, lost, turn, defRetreats, attRetreats, attSweeps, defSweeps, enemySize));
 
             }
 
@@ -66,18 +71,18 @@ public class Main {
         }
         System.out.println("Sorting...\n");
         Collections.sort(results);
-
-
         int n = 0;
-        for (int i = results.size() - 1; i > 0 && n < 10; i--) {
+        int maxCost = 9999999;
+        for (int i = results.size() - 1; n < 20 && i > 0; i--) {
             GreyKnightSquad t = new GreyKnightSquad(type, results.get(i).ID);
-            if (!t.squad[0].spr.mBombs && !t.squad[0].spr.TPH) {
+
+            if (t.cost <= maxCost) {
+                if (n == 0)
+                    maxCost = t.cost;
                 System.out.println(results.get(i));
                 n++;
             }
-
         }
-
     }
 
     public static void combat(String type, Squad enemy, String in, String out) {
@@ -94,7 +99,7 @@ public class Main {
 
             oos.writeUTF(type);
             oos.writeInt(enemy.getWoundSize());
-
+            oos.writeInt(enemy.getCost());
             while(true) {
                 GreyKnightSquad t = new GreyKnightSquad(type, ois.readInt());
 

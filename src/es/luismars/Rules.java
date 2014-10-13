@@ -90,7 +90,11 @@ public class Rules {
     }
 
     public static double rending(int att, int def, int AS) {
-        return (woundRoll(att, def) - 1 / 6.0) * armorSave(AS) + (1 / 6.0);
+        return distort(att, def, AS, 1);
+    }
+
+    public static double distort(int att, int def, int AS, int W) {
+        return ((woundRoll(att, def) - (1 / 6.0)) * armorSave(AS)) + (W / 6.0);
     }
 
     public static double retreatCC(double wDif, int L) {
@@ -103,4 +107,24 @@ public class Rules {
     public static double sweepingAdvance(int iA, int iD) {
         return Math.min(Math.max(1 - ((6 - ((iA + 3) - iD)) / 6.0), 0), 1);
     }
+
+    public static void checkConcusive(Squad att) {
+
+        if (att.concActive) {
+            att.concActive = false;
+            for (Stats s : att.squad)
+                s.updateStats();
+        }
+
+        if (att.concW > 0) {
+            att.concW = (int) Math.ceil(att.concW);
+            att.concActive = true;
+            for (int j = 0; j < att.squad.length && j < att.concW; j++) {
+                att.squad[j].set(Stats.I, 1);
+            }
+        }
+
+        att.concW = 0;
+    }
+
 }

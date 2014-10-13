@@ -41,6 +41,7 @@ public class RangedWeapon {
             }
             //Psilencer
             case 2: {
+                spr.force = true;
                 spr.heavy = true;
                 stats.set(Stats.SHOTS, 6);
                 stats.set(Stats.RANGE, 24);
@@ -71,7 +72,7 @@ public class RangedWeapon {
             }
             //Gatling Psilencer
             case 5: {
-                spr.heavy = true;
+                spr.force = true;
                 stats.set(Stats.SHOTS, 12);
                 stats.set(Stats.RANGE, 24);
                 stats.set(Stats.STR, 4);
@@ -82,7 +83,6 @@ public class RangedWeapon {
             //Heavy Psycanon
             case 6: {
                 //TODO: add area
-                spr.salvo = true;
                 stats.set(Stats.SHOTS, 6);
                 stats.set(Stats.RANGE, 24);
                 stats.set(Stats.STR, 7);

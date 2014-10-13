@@ -22,22 +22,26 @@ public class CCWeapon {
         switch (ID) {
             //Sword
             case 0: {
+                spr.force = true;
                 break;
             }
             //Halberd
             case 1: {
+                spr.force = true;
                 stats.add(Stats.S, 1);
                 cost += 2;
                 break;
             }
             //Falchions
             case 2: {
+                spr.force = true;
                 stats.add(Stats.A, 1);
                 cost +=4;
                 break;
             }
             //Stave
             case 3: {
+                spr.force = true;
                 stats.add(Stats.S, 2);
                 stats.set(Stats.AP, 4);
                 cost += 5;
@@ -45,6 +49,7 @@ public class CCWeapon {
             }
             //Hammer
             case 4: {
+                spr.force = true;
                 stats.mult(Stats.S, 2);
                 stats.set(Stats.I, 1);
                 stats.set(Stats.AP, 2);
@@ -54,6 +59,7 @@ public class CCWeapon {
             }
             //Great Sword
             case 5: {
+                spr.force = true;
                 stats.mult(Stats.S, 2);
                 stats.set(Stats.AP, 2);
                 spr.rerollOneHit = true;

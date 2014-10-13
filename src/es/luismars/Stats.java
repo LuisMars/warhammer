@@ -36,20 +36,21 @@ public class Stats implements Comparable {
     private int[] stats = new int[16];
     private int cost;
 
+    public Stats(int[] s) {
+        baseStats = s;
+        stats = baseStats.clone();
+    }
+
     public Stats(int[] s, CCWeapon cc, RangedWeapon r) {
         this(s, cc, r, null);
     }
 
     public Stats(int[] s, CCWeapon cc, RangedWeapon r, RangedWeapon r2) {
         baseStats = s;
-        stats = baseStats.clone();
         ccw = cc;
         rw = r;
         rw2 = r2;
-        ccw.updateStats(this);
-        rw.updateStats(this);
-        if (rw2 != null)
-            rw2.updateStats(this);
+        updateStats();
     }
 
     public double shooting(Stats s, int size, int distance, boolean moved) {
@@ -62,19 +63,21 @@ public class Stats implements Comparable {
         return wounds;
     }
 
-    private double shootWeapon(Stats s, int size, RangedWeapon rw, int distance) {
+    private double shootWeapon(Stats s, int size, RangedWeapon r, int distance) {
         double wounds = 0;
-        if (rw != null) {
-            rw.updateStats(this);
-            for (int i = 1; i <= get(Stats.SHOTS); i++) {
-                if (distance <= get(RANGE)) { //TODO: before for
-                    if (rw.spr.template)
+        if (r != null) {
+            r.updateStats(this);
+            if (distance <= get(RANGE)) {
+                for (int i = 1; i <= get(Stats.SHOTS); i++) {
+                    if (r.spr.template)
                         wounds += Math.min(size / 2, Math.max(size / 4, (get(RANGE) - distance))) * woundShooting(s, i) * saveShooting(s, i);
-                    else if (rw.spr.rending)
+                    else if (r.spr.rending)
                         wounds += shoot(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
+                    else if (r.spr.distort || r.spr.force)
+                        wounds += shoot(s, i) * Rules.distort(get(STR), s.get(T), s.get(AS), s.get(W));
                     else
                         wounds += shoot(s, i) * woundShooting(s, i) * saveShooting(s, i);
-                }
+                }//TODO: check penetration on distort/force
             }
         }
         return wounds;
@@ -99,6 +102,8 @@ public class Stats implements Comparable {
         for (int i = 1; i <= get(Stats.SHOTS); i++) {
             if (rw.spr.rending)
                 wounds += shootDefensive(s, i) * Rules.rending(get(STR), s.get(T), s.get(AS));
+            else if (rw.spr.distort)
+                wounds += shoot(s, i) * Rules.distort(get(STR), s.get(T), s.get(AS), s.get(W));
             else
                 wounds += shootDefensive(s, i) * woundShooting(s, i) * saveShooting(s, i);
         }
@@ -110,7 +115,10 @@ public class Stats implements Comparable {
         double wounds = 0;
         if (init == get(I)) {
             for (int i = 1; i <= get(A); i++) {
-                wounds += hit(s, i) * wound(s, i) * save(s, i);
+                if (s.ccw.spr.force) {
+                    wounds += hit(s, i) * Rules.distort(get(STR), s.get(T), s.get(AS), s.get(W));
+                } else
+                    wounds += hit(s, i) * wound(s, i) * save(s, i);
             }
         }
         return wounds;
@@ -197,6 +205,15 @@ public class Stats implements Comparable {
         return wounds;
     }
 
+    public void updateStats() {
+        stats = baseStats.clone();
+        ccw.updateStats(this);
+        rw.updateStats(this);
+        if (rw2 != null)
+            rw2.updateStats(this);
+
+    }
+
     public void setAll(Stats s) {
         stats = s.stats.clone();
     }
@@ -254,5 +271,15 @@ public class Stats implements Comparable {
     public int compareTo(Object o) {
         int c = ((Stats) o).cost;
         return (cost > c ? -1 : (cost == c ? 0 : 1));
+    }
+
+    public String toString() {
+        String res = "";
+        res += " with:\t" + (ID.length() == 8 ? "" : "\t\t") + "(" + getCost() + ")" +
+                (ccw.toString().isEmpty() ? "" : "\n\tccw") +
+                (rw.exists() ? ("\n\t" + rw) : "") +
+                ((rw2 != null && rw2.exists()) ? ("\n\t" + rw2) : "");
+
+        return res;
     }
 }
