@@ -18,7 +18,6 @@ public class Rules {
         return hits;
     }
 
-
     public static double shootRoll(int hp) {
         double shots = hp / 6.0;
 
@@ -28,11 +27,9 @@ public class Rules {
         return shots;
     }
 
-
     public static double reroll(double p) {
         return (p) + ((1 - p) * p);
     }
-
 
     public static double woundRoll(int att, int def) {
         double wounds;
@@ -51,6 +48,30 @@ public class Rules {
             wounds = 0;
 
         return wounds;
+    }
+
+    public static String woundRoll() {
+        String res = "";
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                int p = 7 - (int) (woundRoll(i, j) * 6);
+                res += (p != 7 ? p + "+" : "-") + "\t";
+            }
+            res += "\n";
+        }
+        return res;
+    }
+
+    public static String hitRoll() {
+        String res = "";
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                int p = 7 - (int) (hitRoll(i, j) * 6);
+                res += (p != 7 ? p + "+" : "-") + "\t";
+            }
+            res += "\n";
+        }
+        return res;
     }
 
     public static double passTest(int n) {
@@ -76,9 +97,18 @@ public class Rules {
         return p / 36.0;
     }
 
+    public static double save(int AP, int AS, int SS) {
+        if (AP <= AS)
+            return armorSave(AP, AS);
+        else
+            return specialSave(SS);
+    }
 
-    public static double armorSave(int AS) {
-        return (AS - 1) / 6.0;
+    public static double armorSave(int AP, int AS) {
+        if (AS == 7 || AP <= AS)
+            return 1;
+        else
+            return (AS - 1) / 6.0;
     }
 
     public static double specialSave(int SS) {
@@ -89,12 +119,15 @@ public class Rules {
         return p + Math.pow(p, n) * (1 - p);
     }
 
-    public static double rending(int att, int def, int AS) {
-        return distort(att, def, AS, 1);
+    public static double rending(double wounds, double save) {
+        return force(wounds, save, 1);
     }
 
-    public static double distort(int att, int def, int AS, int W) {
-        return ((woundRoll(att, def) - (1 / 6.0)) * armorSave(AS)) + (W / 6.0);
+    public static double force(double wounds, double save, int W) {
+        if (wounds != 0)
+            return ((wounds - (1 / 6.0)) * save) + ((1 - save) * (W / 6.0));
+        else
+            return wounds * save;
     }
 
     public static double retreatCC(double wDif, int L) {

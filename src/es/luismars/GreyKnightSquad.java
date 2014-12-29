@@ -65,7 +65,7 @@ public class GreyKnightSquad extends Squad {
 
 
         squad[0] = setDreadknight(Utils.read(IDs, 0, 3), rw1, rw2, Utils.read(IDs, 6, 7) == 1);
-        squad[0].spr.shootHeavy = true;
+        spr.shootHeavy = true;
     }
 
     private void loadDefaultSquad(String IDs) {
@@ -97,15 +97,15 @@ public class GreyKnightSquad extends Squad {
         if (squad.length == 10)
             squad[9] = setSpecial(Utils.read(IDs, 20, 23), Utils.read(IDs, 23, 25));
 
-        for (Stats s : squad) {
+        //for (Stats s : squad) {
             if (TYPE.charAt(0) == 'T') {
-                s.spr.shootHeavy = true;
-                s.spr.SweepingAdvance = false;
+                spr.shootHeavy = true;
+                spr.SweepingAdvance = false;
             }
             if (TYPE.charAt(0) == 'D') {
-                s.spr.shootHeavy = true;
+                spr.shootHeavy = true;
             }
-        }
+        //}
     }
 
     public GreyKnight setDreadknight(int WP, int RW1, int RW2, boolean PT) {
@@ -120,7 +120,9 @@ public class GreyKnightSquad extends Squad {
 
         GreyKnight d = new GreyKnight(stats, ccw, rw, rw2, PT);
 
-        d.setCost(unitCost + d.ccw.getCost() + d.rw.getCost() + d.rw2.getCost() + (PT ? 30 : 0));
+        ccw.updateStats(d);
+
+        d.setCost(unitCost + d.ccw.get(0).getCost() + rw.getCost() + rw2.getCost() + (PT ? 30 : 0));
 
 
         return d;
@@ -130,16 +132,22 @@ public class GreyKnightSquad extends Squad {
     public GreyKnight setJusticar(int WP, int MC, boolean digital, boolean mBombs, boolean TPH) {
         //TODO: working meltabombs and teleport homer
 
-        CCWeapon ccw = new CCWeapon(WP, MC == 1, digital);
+        CCWeapon ccw = new CCWeapon(WP);
+        ccw.rerollOneHit = MC == 1;
+        ccw.rerollOneWound = digital;
 
-        RangedWeapon rw = new RangedWeapon(0, MC >= 2, digital);
+        RangedWeapon rw = new RangedWeapon(0);
+        rw.rerollOneHit = MC > 1;
+        rw.rerollOneWound = digital;
 
         GreyKnight t = new GreyKnight(justStats, ccw, rw, digital, mBombs, TPH);
 
+        ccw.updateStats(t);
+
         t.setCost(justCost + (digital ? 10 : 0) + (MC > 0 ? 10 : 0) + (mBombs ? 5 : 0) + (TPH ? 10 : 0) + ccw.getCost());
 
-        if (mBombs) t.spr.mBombs = true;
-        if (TPH) t.spr.TPH = true;
+        if (mBombs) t.mBombs = true;
+        if (TPH) t.TPH = true;
 
         t.items = (digital ? "\n" +
                 "\tDigital weapons" : "") + (mBombs ? "\n" +
@@ -194,7 +202,7 @@ public class GreyKnightSquad extends Squad {
 
             s += squad[1].getID();
 
-            if (squad.length == 10 && ((squad[4].ccw.ID < squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID < squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID)))
+            if (squad.length == 10 && ((squad[4].ccw.get(0).ID < squad[9].ccw.get(0).ID && squad[4].rw.get(0).ID == squad[9].rw.get(0).ID) || (squad[4].rw.get(0).ID < squad[9].rw.get(0).ID && squad[4].ccw.get(0).ID == squad[9].ccw.get(0).ID)))
                 s += squad[9].getID();
             else
                 s += squad[4].getID();
@@ -202,7 +210,7 @@ public class GreyKnightSquad extends Squad {
 
             if (squad.length == 10) {
                 s += squad[5].getID();
-                if ((squad[4].ccw.ID >= squad[9].ccw.ID && squad[4].rw.ID == squad[9].rw.ID) || (squad[4].rw.ID >= squad[9].rw.ID && squad[4].ccw.ID == squad[9].ccw.ID))
+                if ((squad[4].ccw.get(0).ID >= squad[9].ccw.get(0).ID && squad[4].rw.get(0).ID == squad[9].rw.get(0).ID) || (squad[4].rw.get(0).ID >= squad[9].rw.get(0).ID && squad[4].ccw.get(0).ID == squad[9].ccw.get(0).ID))
                     s += squad[9].getID();
                 else
                     s += squad[4].getID();

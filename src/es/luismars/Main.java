@@ -11,9 +11,9 @@ public class Main {
         long iniTime = System.currentTimeMillis();
 
 
-        EldarSquad a = new EldarSquad("WraithKnight");
-        //GreyKnightSquad d = new GreyKnightSquad("Strike", 59540352);
-
+        //EldarSquad a = new EldarSquad("WraithKnight");
+        //GreyKnightSquad a = new GreyKnightSquad("Strike", 50594563);
+        ChaosSquad a = new ChaosSquad("Marine");
         //GreyKnightSquad a = new GreyKnightSquad("Interceptor", 59540352);
 /*
         Combat c = new Combat(a,d);
@@ -22,11 +22,13 @@ public class Main {
 */
 
 
-        combat("DreadKnight", a, "dreadknight.dat", "testcombat.dat");
-        //combat("Strike", a, "defaultGKsquad.dat", "testcombat.dat");
+        //combat("DreadKnight", a, "dreadknight.dat", "testcombat.dat");
+        combat("Interceptor", a, "defaultGKsquad.dat", "testcombat.dat");
         top20("testcombat.dat");
 
         //generate("dreadknight.dat");
+
+
         System.out.println("Completed in " + Utils.time(System.currentTimeMillis() - iniTime));
 
         Toolkit.getDefaultToolkit().beep();
@@ -76,7 +78,7 @@ public class Main {
         for (int i = results.size() - 1; n < 20 && i > 0; i--) {
             GreyKnightSquad t = new GreyKnightSquad(type, results.get(i).ID);
 
-            if (t.cost <= maxCost) {
+            if (true) {//t.size == 10) {
                 if (n == 0)
                     maxCost = t.cost;
                 System.out.println(results.get(i));

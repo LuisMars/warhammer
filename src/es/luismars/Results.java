@@ -44,8 +44,7 @@ public class Results implements Comparable<Results> {
 
         SIZE = size;
         ENEMYSIZE = enemySize;
-        EF = (WOUNDS / ENEMYSIZE) * ((1 + OVERKILL) / ENEMYSIZE) * (SIZE / LOST) * (1 + DEFRETREATS) * (1 - ATTRETREATS) * (1 + ATTSWEEPS) * (1 - DEFSWEEPS);// * (ENEMYCOST*1.0/COST);
-
+        EF = (WOUNDS / ENEMYSIZE) * (OVERKILL / ENEMYSIZE) * ((SIZE - LOST) / SIZE) * (1 + DEFRETREATS) * (1 - ATTRETREATS) * (1 + ATTSWEEPS) * (1 - DEFSWEEPS);// * (ENEMYCOST*1.0/COST);
     }
 
     public int compareTo(Results R) {

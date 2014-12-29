@@ -4,7 +4,9 @@ package es.luismars;
 public class EldarCCW extends CCWeapon {
 
     public EldarCCW(int WP, boolean MC, boolean DW) {
-        super(WP, MC, DW);
+        super(WP);
+        rerollOneHit = MC;
+        rerollOneWound = DW;
     }
 
     public EldarCCW(int WP) {
@@ -27,7 +29,7 @@ public class EldarCCW extends CCWeapon {
     @Override
     public String toString() {
         String res = "";
-        if (spr.rerollOneHit)
+        if (rerollOneHit)
             res += "Master-crafted ";
 
         switch (ID) {

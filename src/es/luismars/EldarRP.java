@@ -7,7 +7,9 @@ public class EldarRP extends RangedWeapon {
     }
 
     public EldarRP(int id, boolean MC, boolean DW) {
-        super(id, MC, DW);
+        super(id);
+        rerollOneHit = MC;
+        rerollOneWound = DW;
     }
 
     public void updateStats(Stats stats) {
@@ -18,7 +20,7 @@ public class EldarRP extends RangedWeapon {
                 stats.set(Stats.RANGE, 36);
                 stats.set(Stats.STR, 10);
                 stats.set(Stats.APW, 2);
-                spr.distort = true;
+                distort = true;
                 cost = 0;
                 break;
             }
@@ -31,7 +33,7 @@ public class EldarRP extends RangedWeapon {
 
     public String toString() {
         String res = "";
-        if (spr.rerollOneHit)
+        if (rerollOneHit)
             res += "Master-crafted ";
         switch (ID) {
             case 0: {

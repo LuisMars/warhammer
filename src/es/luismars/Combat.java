@@ -4,7 +4,7 @@ public class Combat {
 
     Squad a;
     Squad d;
-    int distance = 12;
+    int distance = 60;
     int turn = 0;
 
     String summary = "";
@@ -24,15 +24,19 @@ public class Combat {
                 att = d;
                 def = a;
             }
+            d.setAverage();
+            a.setAverage();
+            distance -= att.stats.get(Stats.M);
 
             if (!att.inCC && !def.inCC && att.canFight() && def.canFight()) {
-                shoot(att, def);
-
+                shooting(att, def, false);
                 //check if should assault
                 if (distance <= 6 && att.canFight() && def.canFight()) {
                     att.inCC = true;
+                    att.canAssault = true;
+                    def.canAssault = def.spr.counterAttack;
                     def.inCC = true;
-                    defensive(def, att);
+                    shooting(def, att, true);
                     distance = 0;
                 }
             }
@@ -43,76 +47,21 @@ public class Combat {
         }
     }
 
-    public void shoot(Squad att, Squad def) {
-
-        int tempD = distance;
-        int bestM = att.squad[0].get(Stats.M);
-        int mov;
-
-        //if distance is more than enough to assault
-        if (distance <= bestM) {
-            if (distance != 1) {
-                distance = 1;
-                att.tempWounds = shooting(att, def, true) * att.remainingPower();
-            } else
-                att.tempWounds = shooting(att, def, false) * att.remainingPower();
-        }
-        // if is save to assault
-        else if (distance - bestM - 6 <= 0) {
-            distance -= bestM;
-            att.tempWounds = shooting(att, def, true) * att.remainingPower();
-
-        } //not getting assaulted
-/*
-        //TODO: check if its better to assault than going back
-        else if(def.squad[0].get(Stats.M) + 6 >= distance - bestM) {
-            //System.out.println(att.TYPE + " in danger in turn " + (turn+1)/2);
-
-            mov = def.squad[0].get(Stats.M) - 7;
-            distance += mov;
-            att.tempWounds = shooting(att, def, mov != 0) * att.remaining();
-        }*/
-        else {
-            for (int i = bestM; i >= 0; i--) {
-                mov = i;
-                distance = tempD - i;
-
-                double tempWounds = shooting(att, def, mov != 0) * att.remainingPower();
-
-                if (tempWounds > att.tempWounds) {
-                    att.tempWounds = tempWounds;
-                    bestM = mov;
-                }
-
-            }
-
-            distance = tempD - bestM;
-        }
-
-        att.wounds += att.tempWounds;
-        def.lost = att.wounds;
-
-        addSummary("Shooting");
-    }
-
     public String toString() {
         return summary;
     }
 
     public void combat(Squad att, Squad def) {
-        double woundsAttTot = 0;
-        double woundsDefTot = 0;
+
         int attRemMin = att.remainingMinis();
         int defRemMin = def.remainingMinis();
-        for (int i = 10; i >= 0; i--) {
-            double woundsAtt = woundPool(att, def, i);
-            double woundsDef = woundPool(def, att, i);
+        for (int init = 10; init >= 0; init--) {
+            double woundsAtt = woundPool(att, def, init);
+            double woundsDef = woundPool(def, att, init);
 
-            woundsAttTot += woundsAtt;
             att.wounds += woundsAtt;
             def.lost += woundsAtt;
 
-            woundsDefTot += woundsDef;
             att.lost += woundsDef;
             def.wounds += woundsDef;
         }
@@ -123,21 +72,21 @@ public class Combat {
 
         att.combatResult(attRemMin - att.remainingMinis(), defRemMin - def.remainingMinis(), def.squad[0]);
         def.combatResult(defRemMin - def.remainingMinis(), attRemMin - att.remainingMinis(), att.squad[0]);
-
+        att.canAssault = false;
         addSummary("CC");
     }
 
-    private double woundPool(Squad att, Squad def, int i) {
+    private double woundPool(Squad att, Squad def, int init) {
         double wounds = 0;
         if (att.canFight()) {
             for (Stats s : att.squad) {
-                double w = s.combat(def.squad[0], i) * att.remainingPower();
+                double w = s.combat(def, init, att.canAssault, att.spr.rage) * att.remainingPower();
                 if (w > 0) {
                     //Instant death
                     if (s.get(Stats.S) >= 2 * def.squad[0].get(Stats.T) && def.squad[0].get(Stats.W) > 1) {
                         w *= def.squad[0].get(Stats.W);
                     }
-                    if (def.squad[0].get(Stats.W) > 1 && s.ccw.spr.concussive)
+                    if (def.squad[0].get(Stats.W) > 1 && s.ccw.get(0).concussive)
                         def.concW += w;
                     wounds += w;
                 }
@@ -147,23 +96,19 @@ public class Combat {
         return wounds;
     }
 
-    public double shooting(Squad att, Squad def, boolean moved) {
+    public void shooting(Squad att, Squad def, boolean overwatch) {
         double w = 0;
-        for (Stats s : att.squad) {
-            w += s.shooting(def.squad[0], def.size, distance, moved);
-        }
-        return w;
-    }
+        w += att.shoot(def, overwatch) * att.remainingPower();
 
-    public void defensive(Squad att, Squad def) {
-        double w = 0;
-        for (Stats s : att.squad) {
-            w += s.defensive(def.squad[0]);
-        }
+        att.wounds += w;
+        def.lost += w;
 
-        att.wounds += w * att.remainingPower();
-        def.lost = att.wounds;
-        addSummary("Taking defensive");
+        if (w != 0) {
+            if (overwatch)
+                addSummary("Overwatch");
+            else
+                addSummary("Shooting");
+        }
     }
 
     public void addSummary(String fase) {
